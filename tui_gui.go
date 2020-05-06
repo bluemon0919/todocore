@@ -30,7 +30,6 @@ func NewGUI(td *TODO) *GUI {
 func (g *GUI) Run() error {
 
 	g.UpdateView()
-	g.SetKeybinding() // 各画面のキーバインドを設定する
 
 	grid := tview.NewGrid(). // グリッドを作成する
 					SetColumns(20, 0).                            // グリッドのセルを縦に二つ作る
@@ -38,6 +37,7 @@ func (g *GUI) Run() error {
 					AddItem(g.ListPanel, 0, 1, 1, 1, 0, 0, true)  // ListPanelを右側に配置
 
 	g.Pages.AddAndSwitchToPage("main", grid, true) // グリッドをPagesの管理下に置き、フォーカスする
+	g.SetKeybinding()                              // 各画面のキーバインドを設定する
 
 	return g.App.SetRoot(g.Pages, true).Run() // PagesをApplicationの管理下におき、Run()でtviewを実行する
 }
