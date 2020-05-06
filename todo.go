@@ -30,11 +30,11 @@ func NewTODO(e *Entity) *TODO {
 }
 
 // Add TODOアイテムを追加する
-func (td *TODO) Add(item Item) error {
+func (td *TODO) Add(title, detail string) error {
 	ei := &EntityItem{
 		key:    td.ID(),
-		title:  item.title,
-		detail: item.detail,
+		title:  title,
+		detail: detail,
 		status: ACTIVE,
 	}
 	return td.e.Add(ei)

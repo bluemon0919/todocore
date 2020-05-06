@@ -79,12 +79,7 @@ func (m *Menu) NewIssue() error {
 	if _, err := fmt.Fscanf(m.stdin, "%s", &detail); err != nil {
 		return err
 	}
-
-	item := Item{
-		title:  title,
-		detail: detail,
-	}
-	return m.td.Add(item)
+	return m.td.Add(title, detail)
 }
 
 // SelectIssue TODOのリストを表示して処理を選択させる
