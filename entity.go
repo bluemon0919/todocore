@@ -11,8 +11,6 @@ type Entity struct {
 	id int
 }
 
-var mm map[int]EntityItem
-
 // EntityItem Entityに書き込むアイテム
 type EntityItem struct {
 	key    int
