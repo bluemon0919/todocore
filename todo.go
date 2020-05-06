@@ -32,7 +32,7 @@ func NewTODO(e *Entity) *TODO {
 // Add TODOアイテムを追加する
 func (td *TODO) Add(title, detail string) error {
 	ei := &EntityItem{
-		key:    td.ID(),
+		key:    td.e.NewID(),
 		title:  title,
 		detail: detail,
 		status: ACTIVE,
@@ -74,10 +74,4 @@ func (td *TODO) get(kind int) ([]Item, error) {
 		})
 	}
 	return items, nil
-}
-
-// ID 固有のIDを発行する
-func (td *TODO) ID() int {
-	td.id++
-	return td.id
 }

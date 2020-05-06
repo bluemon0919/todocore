@@ -7,7 +7,8 @@ import (
 
 // Entity データを管理する
 type Entity struct {
-	m map[int]EntityItem
+	m  map[int]EntityItem
+	id int
 }
 
 var mm map[int]EntityItem
@@ -23,6 +24,12 @@ type EntityItem struct {
 // NewEntity creates entity
 func NewEntity() *Entity {
 	return &Entity{}
+}
+
+// NewID 新しいIDを返す
+func (e *Entity) NewID() int {
+	e.id++
+	return e.id
 }
 
 // Add Entityにアイテムを追加する
