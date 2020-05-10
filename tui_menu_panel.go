@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/rivo/tview"
 )
 
@@ -33,7 +35,10 @@ func (m *MenuPanel) Keybinding(g *GUI) {
 				// Saveを選択した場合に、TODOリストにアイテムを追加する
 				title := iform.GetFormItem(0).(*tview.InputField).GetText()
 				detail := iform.GetFormItem(1).(*tview.InputField).GetText()
-				g.td.Add(title, detail)
+				if err := g.td.Add(title, detail); err != nil {
+					g.App.Stop()
+					log.Fatal(err)
+				}
 				g.UpdateView()
 			}).
 			AddButton("Cancel", func() {
