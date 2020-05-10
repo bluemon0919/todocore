@@ -14,7 +14,7 @@ var table = []EntityItem{
 }
 
 func TestGet(t *testing.T) {
-	entity := &Entity{}
+	entity := &EntityMap{}
 
 	entity.m = make(map[int]EntityItem)
 	for i, ei := range table {
@@ -26,17 +26,17 @@ func TestGet(t *testing.T) {
 		log.Fatal(err)
 	}
 	for i, ei := range expect {
-		if table[i].key != ei.key {
-			log.Fatal(ei.key)
+		if table[i].Key != ei.Key {
+			log.Fatal(ei.Key)
 		}
-		if table[i].title != ei.title {
-			log.Fatal(ei.title)
+		if table[i].Title != ei.Title {
+			log.Fatal(ei.Title)
 		}
-		if table[i].detail != ei.detail {
-			log.Fatal(ei.detail)
+		if table[i].Detail != ei.Detail {
+			log.Fatal(ei.Detail)
 		}
-		if table[i].status != ei.status {
-			log.Fatal(ei.status)
+		if table[i].Status != ei.Status {
+			log.Fatal(ei.Status)
 		}
 	}
 }

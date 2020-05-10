@@ -2,7 +2,7 @@ package main
 
 // TODO TODOアプリを管理する
 type TODO struct {
-	e  *Entity
+	e  Entity
 	id int
 }
 
@@ -23,7 +23,7 @@ const (
 )
 
 // NewTODO Creates TODO
-func NewTODO(e *Entity) *TODO {
+func NewTODO(e Entity) *TODO {
 	return &TODO{
 		e: e,
 	}
@@ -32,10 +32,10 @@ func NewTODO(e *Entity) *TODO {
 // Add TODOアイテムを追加する
 func (td *TODO) Add(title, detail string) error {
 	ei := &EntityItem{
-		key:    td.e.NewID(),
-		title:  title,
-		detail: detail,
-		status: ACTIVE,
+		Key:    td.e.NewID(),
+		Title:  title,
+		Detail: detail,
+		Status: ACTIVE,
 	}
 	return td.e.Add(ei)
 }
@@ -68,9 +68,9 @@ func (td *TODO) get(kind int) ([]Item, error) {
 	}
 	for _, ei := range eis {
 		items = append(items, Item{
-			ei.key,
-			ei.title,
-			ei.detail,
+			ei.Key,
+			ei.Title,
+			ei.Detail,
 		})
 	}
 	return items, nil
