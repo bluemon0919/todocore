@@ -1,11 +1,10 @@
 package main
 
-import (
-	"log"
-)
+import "log"
 
 func main() {
-	ent := NewEntityJSON("tmp.json")
+	ent := NewEntitySQL("database.db")
+	//ent := NewEntityJSON("tmp.json")
 	if ent == nil {
 		log.Fatal("file create error")
 		return
