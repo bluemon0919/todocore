@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>MyTODO</title>
+<meta name="viewport" content="width=device-width,
+ initial-scale=1.0,user-scalable=yes" />
+    <style>
+        input{
+            font-size:16px;
+            width: 18em;
+        }
+        select{
+            width: 18em;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 新しいアイテム入力へジャンプ -->
+    <div class="InputSample">
+        <h2>
+            新しいアイテム
+        </h2>
+        <form class="menu_operation" action="/input" method="post">
+            <p><input type="submit" value="追加する" name="add"></p>
+        </form>
+    </div>
+    <!-- 新しいアイテム入力へジャンプ ここまで -->
+
+    <!-- リスト表示エリア -->
+	<div class="ListSample">
+        <h2>
+            TODOアイテム一覧
+        </h2>
+        <form class="list_operation" action="/operation_post" method="post">
+            <select name="select_key" size="5">
+                {{range .}}
+                <option value="{{.Key}}">
+                    [{{.Key}}]
+                    {{.Title}}
+                </option>
+                {{else}}
+                <option value=""> No data</option>
+                {{end}}
+            </select>
+
+            <p><input type="submit" value="完了" name="complete"></p>
+            <p><input type="submit" value="削除" name="delete"></p>
+            <p><input type="submit" value="戻る" name="reset"></p>
+        </form>
+    </div>
+    <!-- リスト表示エリアここまで -->
+</body>
+</html>

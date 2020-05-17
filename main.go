@@ -4,15 +4,15 @@ import "log"
 
 func main() {
 	ent := NewEntitySQL("database.db")
-	//ent := NewEntityJSON("tmp.json")
 	if ent == nil {
 		log.Fatal("file create error")
 		return
 	}
-	//ent := NewEntityMap()
+
 	td := NewTODO(ent)
-	menu := NewGUI(td)
-	if err := menu.Run(); err != nil {
+
+	handler := NewHandler(td, ":8080")
+	if err := handler.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
