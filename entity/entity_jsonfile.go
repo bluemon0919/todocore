@@ -1,4 +1,4 @@
-package main
+package entity
 
 import (
 	"encoding/json"
@@ -119,15 +119,8 @@ func (e *EntityJSON) Get(status int) (eis []EntityItem, err error) {
 	}
 
 	for _, ei := range e.m {
-		switch status {
-		case ACTIVE:
-			if ei.Status != ACTIVE {
-				continue
-			}
-		case COMPLETE:
-			if ei.Status != COMPLETE {
-				continue
-			}
+		if status != ei.Status {
+			continue
 		}
 		eis = append(eis, ei)
 	}

@@ -1,4 +1,4 @@
-package main
+package entity
 
 import (
 	"log"
@@ -7,6 +7,15 @@ import (
 )
 
 const TestEntitySQLTestFileName = "test.db"
+
+const (
+	// ACTIVE TODOアイテムがアクティブ状態
+	ACTIVE = 1
+	// COMPLETE TODOアイテムが完了状態
+	COMPLETE = 2
+	// ALL 全てのTODOアイテムを選択するための定義
+	ALL = 99
+)
 
 func TestNewEntitySQL(t *testing.T) {
 

@@ -1,9 +1,13 @@
 package main
 
-import "log"
+import (
+	"log"
+
+	"todotool/entity"
+)
 
 func main() {
-	ent := NewEntitySQL("database.db")
+	ent := entity.NewEntitySQL("database.db")
 	if ent == nil {
 		log.Fatal("file create error")
 		return

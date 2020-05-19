@@ -1,8 +1,10 @@
 package main
 
+import "todotool/entity"
+
 // TODO TODOアプリを管理する
 type TODO struct {
-	e  Entity
+	e  entity.Entity
 	id int
 }
 
@@ -23,7 +25,7 @@ const (
 )
 
 // NewTODO Creates TODO
-func NewTODO(e Entity) *TODO {
+func NewTODO(e entity.Entity) *TODO {
 	return &TODO{
 		e: e,
 	}
@@ -31,7 +33,7 @@ func NewTODO(e Entity) *TODO {
 
 // Add TODOアイテムを追加する
 func (td *TODO) Add(title, detail string) error {
-	ei := &EntityItem{
+	ei := &entity.EntityItem{
 		Key:    td.e.NewID(),
 		Title:  title,
 		Detail: detail,
