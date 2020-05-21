@@ -3,16 +3,17 @@ package main
 import (
 	"fmt"
 	"io"
+	"todotool/todo"
 )
 
 // Menu TODOリストを操作するメニュー
 type Menu struct {
-	td    *TODO
+	td    *todo.TODO
 	stdin io.Reader
 }
 
 // NewMenu コマンドラインメニューでTODOを操作する
-func NewMenu(td *TODO, stdin io.Reader) *Menu {
+func NewMenu(td *todo.TODO, stdin io.Reader) *Menu {
 	return &Menu{
 		td:    td,
 		stdin: stdin,
@@ -92,7 +93,7 @@ func (m *Menu) SelectIssue() error {
 		return err
 	}
 	for _, item := range items {
-		fmt.Printf("%d: %s\n", item.id, item.title)
+		fmt.Printf("%d: %s\n", item.ID, item.Title)
 	}
 
 	// 表示したリストから、アイテムを選択する
@@ -114,7 +115,7 @@ func (m *Menu) SelectIssue() error {
 	}
 	switch op {
 	case 1:
-		m.td.ChangeStatus(n, COMPLETE)
+		m.td.ChangeStatus(n, todo.COMPLETE)
 	case 2:
 		m.td.Delete(n)
 	}

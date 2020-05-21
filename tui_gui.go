@@ -1,6 +1,8 @@
 package main
 
 import (
+	"todotool/todo"
+
 	"github.com/rivo/tview"
 )
 
@@ -11,11 +13,11 @@ type GUI struct {
 	MenuPanel   *MenuPanel         // メニュー画面
 	ListPanel   *ListPanel
 	DetailPanel *DetailPanel
-	td          *TODO // TODOツールへの操作
+	td          *todo.TODO // TODOツールへの操作
 }
 
 // NewGUI creates GUI
-func NewGUI(td *TODO) *GUI {
+func NewGUI(td *todo.TODO) *GUI {
 	return &GUI{
 		App:         tview.NewApplication(),
 		Pages:       tview.NewPages(),

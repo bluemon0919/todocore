@@ -1,4 +1,4 @@
-package main
+package todo
 
 import "todotool/entity"
 
@@ -10,9 +10,9 @@ type TODO struct {
 
 // Item TODOアイテム
 type Item struct {
-	id     int
-	title  string
-	detail string
+	ID     int
+	Title  string
+	Detail string
 }
 
 const (

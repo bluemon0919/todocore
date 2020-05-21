@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"todotool/todo"
 
 	"github.com/rivo/tview"
 )
 
 // ListPanel ファイル操作するための情報
 type ListPanel struct {
-	items []Item
+	items []todo.Item
 	*tview.Table
 }
 
@@ -28,12 +29,12 @@ func NewListPanel() *ListPanel {
 }
 
 // SetItems set files info
-func (l *ListPanel) SetItems(items []Item) {
+func (l *ListPanel) SetItems(items []todo.Item) {
 	l.items = items
 }
 
 // SelectedItem 現在選択しているファイル情報を取得する
-func (l *ListPanel) SelectedItem() *Item {
+func (l *ListPanel) SelectedItem() *todo.Item {
 	row, _ := l.Table.GetSelection()
 	if row > len(l.items)-1 || row < 0 {
 		return nil
@@ -57,9 +58,9 @@ func (l *ListPanel) Keybinding(g *GUI) {
 			}
 			switch buttonLabel {
 			case "Complete":
-				g.td.ChangeStatus(item.id, COMPLETE)
+				g.td.ChangeStatus(item.ID, todo.COMPLETE)
 			case "Delete":
-				g.td.Delete(item.id)
+				g.td.Delete(item.ID)
 			}
 			g.Pages.HidePage("modal")
 			g.UpdateView()
@@ -81,7 +82,7 @@ func (l *ListPanel) Keybinding(g *GUI) {
 func (l *ListPanel) UpdateView() {
 	table := l.Clear()
 	for i, item := range l.items {
-		cell := tview.NewTableCell(fmt.Sprintf("%4d:%s\n", item.id, item.title))
+		cell := tview.NewTableCell(fmt.Sprintf("%4d:%s\n", item.ID, item.Title))
 		table.SetCell(i, 0, cell)
 	}
 }

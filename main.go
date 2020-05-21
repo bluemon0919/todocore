@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"todotool/entity"
+	"todotool/todo"
 )
 
 func main() {
@@ -13,7 +14,7 @@ func main() {
 		return
 	}
 
-	td := NewTODO(ent)
+	td := todo.NewTODO(ent)
 
 	handler := NewHandler(td, ":8080")
 	if err := handler.Run(); err != nil {

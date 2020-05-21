@@ -5,16 +5,17 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"todotool/todo"
 )
 
 // Handler HTTPハンドラおよびHTML形式のユーザーインターフェースを提供する
 type Handler struct {
 	addr string
-	td   *TODO // TODOツールへの操作
+	td   *todo.TODO // TODOツールへの操作
 }
 
 // NewHandler create WebHandler
-func NewHandler(td *TODO, addr string) *Handler {
+func NewHandler(td *todo.TODO, addr string) *Handler {
 	return &Handler{
 		addr: addr,
 		td:   td,
@@ -47,8 +48,8 @@ func (h *Handler) listHandler(w http.ResponseWriter, r *http.Request) {
 	var listItems []ListItem
 	for _, item := range items {
 		listItem := ListItem{
-			Key:   item.id,
-			Title: item.title,
+			Key:   item.ID,
+			Title: item.Title,
 		}
 		listItems = append(listItems, listItem)
 	}
@@ -77,7 +78,7 @@ func (h *Handler) operationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if "" != r.FormValue("complete") {
-		h.td.e.Update(key, COMPLETE)
+		h.td.ChangeStatus(key, todo.COMPLETE)
 	}
 	if "" != r.FormValue("delete") {
 		h.td.Delete(key)
