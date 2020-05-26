@@ -4,8 +4,9 @@ import "todotool/entity"
 
 // TODO TODOアプリを管理する
 type TODO struct {
-	e  entity.Entity
-	id int
+	srv *Server
+	e   entity.Entity
+	id  int
 }
 
 // Item TODOアイテム
@@ -27,12 +28,14 @@ const (
 // NewTODO Creates TODO
 func NewTODO(e entity.Entity) *TODO {
 	return &TODO{
-		e: e,
+		srv: NewServer("http://localhost:8080"),
+		e:   e,
 	}
 }
 
 // Add TODOアイテムを追加する
 func (td *TODO) Add(title, detail string) error {
+	td.srv.StartService()
 	ei := &entity.EntityItem{
 		Key:    td.e.NewID(),
 		Title:  title,

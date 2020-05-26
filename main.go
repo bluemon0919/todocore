@@ -16,8 +16,10 @@ func main() {
 
 	td := todo.NewTODO(ent)
 
-	handler := NewHandler(td, ":8080")
-	if err := handler.Run(); err != nil {
+	//ui := NewMenu(td, os.Stdin)
+	//ui := NewGUI(td)
+	ui := NewHandler(td, ":8080")
+	if err := ui.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
