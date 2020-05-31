@@ -25,7 +25,7 @@ func NewHandler(td *todo.Client, addr string) *Handler {
 // Run 実行する
 func (h *Handler) Run() error {
 	// httpハンドラの設定
-	http.HandleFunc("/", h.listHandler)
+	http.HandleFunc("/list", h.listHandler)
 	http.HandleFunc("/operation_post", h.operationHandler)
 	http.HandleFunc("/input", h.inputFormHandler)
 	http.HandleFunc("/input_post", h.inputPostHandler)
@@ -65,7 +65,7 @@ func (h *Handler) operationHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := r.ParseForm(); err != nil {
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/list", http.StatusFound)
 		return
 	}
 
@@ -73,7 +73,7 @@ func (h *Handler) operationHandler(w http.ResponseWriter, r *http.Request) {
 	keyStr := r.FormValue("select_key")
 	key, err := strconv.Atoi(keyStr)
 	if err != nil {
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/list", http.StatusFound)
 		return
 	}
 
@@ -83,7 +83,7 @@ func (h *Handler) operationHandler(w http.ResponseWriter, r *http.Request) {
 	if "" != r.FormValue("delete") {
 		h.td.Delete(key)
 	}
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Redirect(w, r, "/list", http.StatusFound)
 }
 
 // inputFormHandler
@@ -101,7 +101,7 @@ func (h *Handler) inputPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := r.ParseForm(); err != nil {
 		fmt.Println(err)
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, "/list", http.StatusFound)
 		return
 	}
 	// 入力テキストをレコードに登録する
@@ -109,5 +109,5 @@ func (h *Handler) inputPostHandler(w http.ResponseWriter, r *http.Request) {
 	detail := r.FormValue("detail")
 
 	h.td.Add(title, detail)
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Redirect(w, r, "/list", http.StatusFound)
 }
