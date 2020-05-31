@@ -4,15 +4,16 @@ import "todotool/entity"
 
 // TODO TODOアプリを管理する
 type TODO struct {
-	e  entity.Entity
-	id int
+	srv *Server
+	e   entity.Entity
+	id  int
 }
 
 // Item TODOアイテム
 type Item struct {
-	ID     int
-	Title  string
-	Detail string
+	ID     int    `json:"ID"`
+	Title  string `json:"Title"`
+	Detail string `json:"Detail"`
 }
 
 const (

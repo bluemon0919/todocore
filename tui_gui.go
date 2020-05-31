@@ -13,11 +13,11 @@ type GUI struct {
 	MenuPanel   *MenuPanel         // メニュー画面
 	ListPanel   *ListPanel
 	DetailPanel *DetailPanel
-	td          *todo.TODO // TODOツールへの操作
+	td          *todo.Client // TODOツールへの操作
 }
 
 // NewGUI creates GUI
-func NewGUI(td *todo.TODO) *GUI {
+func NewGUI(td *todo.Client) *GUI {
 	return &GUI{
 		App:         tview.NewApplication(),
 		Pages:       tview.NewPages(),
