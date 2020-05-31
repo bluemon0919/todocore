@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"todotool/entity"
 	"todotool/todo"
@@ -13,12 +14,14 @@ func main() {
 		log.Fatal("file create error")
 		return
 	}
+	srv := todo.NewServer(":8080", ent)
+	go srv.StartService()
 
-	td := todo.NewTODO(ent)
+	client, _ := todo.NewClient("http://localhost:8080")
 
-	//ui := NewMenu(td, os.Stdin)
-	//ui := NewGUI(td)
-	ui := NewHandler(td, ":8080")
+	ui := NewMenu(client, os.Stdin)
+	//ui := NewGUI(client)
+	//ui := NewHandler(client, ":8080")
 	if err := ui.Run(); err != nil {
 		log.Fatal(err)
 	}

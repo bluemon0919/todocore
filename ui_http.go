@@ -11,11 +11,11 @@ import (
 // Handler HTTPハンドラおよびHTML形式のユーザーインターフェースを提供する
 type Handler struct {
 	addr string
-	td   *todo.TODO // TODOツールへの操作
+	td   *todo.Client // TODOツールへの操作
 }
 
 // NewHandler create WebHandler
-func NewHandler(td *todo.TODO, addr string) *Handler {
+func NewHandler(td *todo.Client, addr string) *Handler {
 	return &Handler{
 		addr: addr,
 		td:   td,

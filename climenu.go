@@ -8,12 +8,12 @@ import (
 
 // Menu TODOリストを操作するメニュー
 type Menu struct {
-	td    *todo.TODO
+	td    *todo.Client
 	stdin io.Reader
 }
 
 // NewMenu コマンドラインメニューでTODOを操作する
-func NewMenu(td *todo.TODO, stdin io.Reader) *Menu {
+func NewMenu(td *todo.Client, stdin io.Reader) *Menu {
 	return &Menu{
 		td:    td,
 		stdin: stdin,
@@ -115,9 +115,11 @@ func (m *Menu) SelectIssue() error {
 	}
 	switch op {
 	case 1:
-		m.td.ChangeStatus(n, todo.COMPLETE)
+		err = m.td.ChangeStatus(n, todo.COMPLETE)
 	case 2:
-		m.td.Delete(n)
+		fmt.Println("delete>>")
+		err = m.td.Delete(n)
+		fmt.Println("<<delete err=", err)
 	}
 	return err
 }

@@ -11,9 +11,9 @@ type TODO struct {
 
 // Item TODOアイテム
 type Item struct {
-	ID     int
-	Title  string
-	Detail string
+	ID     int    `json:"ID"`
+	Title  string `json:"Title"`
+	Detail string `json:"Detail"`
 }
 
 const (
@@ -28,14 +28,12 @@ const (
 // NewTODO Creates TODO
 func NewTODO(e entity.Entity) *TODO {
 	return &TODO{
-		srv: NewServer("http://localhost:8080"),
-		e:   e,
+		e: e,
 	}
 }
 
 // Add TODOアイテムを追加する
 func (td *TODO) Add(title, detail string) error {
-	td.srv.StartService()
 	ei := &entity.EntityItem{
 		Key:    td.e.NewID(),
 		Title:  title,

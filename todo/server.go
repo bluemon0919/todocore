@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"todotool/entity"
 )
 
 type Response struct {
-	imtes []Item
+	Items []Item `json:"Item"`
 }
 
 type AddRequest struct {
@@ -27,10 +28,10 @@ type Server struct {
 }
 
 // NewServer creates new Server
-func NewServer(addr string, td *TODO) *Server {
+func NewServer(addr string, ent entity.Entity) *Server {
 	return &Server{
 		addr: addr,
-		td:   td,
+		td:   NewTODO(ent),
 	}
 }
 
@@ -76,9 +77,9 @@ func (srv *Server) get(w http.ResponseWriter, r *http.Request) {
 	}
 	var resp Response
 	for _, item := range items {
-		resp.imtes = append(resp.imtes, item)
+		resp.Items = append(resp.Items, item)
 	}
-	if err := enc.Encode(resp); err != nil {
+	if err := enc.Encode(&resp); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
