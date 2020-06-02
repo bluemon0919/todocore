@@ -17,7 +17,7 @@ const (
 	ALL = 99
 )
 
-func TestNewEntitySQL(t *testing.T) {
+func TestNewSQL(t *testing.T) {
 
 	expect := TestEntitySQLTestFileName
 	// ファイルを削除する
@@ -27,7 +27,7 @@ func TestNewEntitySQL(t *testing.T) {
 		}
 	}
 
-	ent := NewEntitySQL(expect)
+	ent := NewSQL(expect)
 	if ent.filename != expect {
 		log.Fatalf("file name does not match. %s\n", ent.filename)
 	}
@@ -52,7 +52,7 @@ func TestAdd(t *testing.T) {
 		}
 	}
 
-	ent := NewEntitySQL(TestEntitySQLTestFileName)
+	ent := NewSQL(TestEntitySQLTestFileName)
 
 	item := EntityItem{
 		Detail: "hogehoge",
@@ -104,7 +104,7 @@ func TestDelete(t *testing.T) {
 		}
 	}
 
-	ent := NewEntitySQL(TestEntitySQLTestFileName)
+	ent := NewSQL(TestEntitySQLTestFileName)
 
 	item := EntityItem{
 		Title:  "hoge",
@@ -137,7 +137,7 @@ func TestUpdate(t *testing.T) {
 		}
 	}
 
-	ent := NewEntitySQL(TestEntitySQLTestFileName)
+	ent := NewSQL(TestEntitySQLTestFileName)
 
 	item := EntityItem{
 		Title:  "hoge",
@@ -170,7 +170,7 @@ func TestGet(t *testing.T) {
 		}
 	}
 
-	ent := NewEntitySQL(TestEntitySQLTestFileName)
+	ent := NewSQL(TestEntitySQLTestFileName)
 
 	item := EntityItem{
 		Title:  "hoge",

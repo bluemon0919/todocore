@@ -8,7 +8,7 @@ import (
 )
 
 func TestServerGetActive(t *testing.T) {
-	ent := entity.NewEntityMap()
+	ent := entity.NewMap()
 	srv := NewServer(":8080", ent)
 
 	w := httptest.NewRecorder()
@@ -24,7 +24,7 @@ func TestServerGetActive(t *testing.T) {
 }
 
 func TestServerGetComplete(t *testing.T) {
-	ent := entity.NewEntityMap()
+	ent := entity.NewMap()
 	srv := NewServer(":8080", ent)
 
 	w := httptest.NewRecorder()
@@ -40,7 +40,7 @@ func TestServerGetComplete(t *testing.T) {
 }
 
 func TestServerDelete(t *testing.T) {
-	ent := entity.NewEntityMap()
+	ent := entity.NewMap()
 	srv := NewServer(":8080", ent)
 
 	w := httptest.NewRecorder()
@@ -54,7 +54,7 @@ func TestServerDelete(t *testing.T) {
 }
 
 func TestServerAdd(t *testing.T) {
-	ent := entity.NewEntityMap()
+	ent := entity.NewMap()
 	srv := NewServer(":8080", ent)
 
 	w := httptest.NewRecorder()
@@ -67,7 +67,7 @@ func TestServerAdd(t *testing.T) {
 }
 
 func TestServerUpdate(t *testing.T) {
-	ent := entity.NewEntityMap()
+	ent := entity.NewMap()
 	srv := NewServer(":8080", ent)
 
 	w := httptest.NewRecorder()

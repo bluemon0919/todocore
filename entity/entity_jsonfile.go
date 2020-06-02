@@ -21,8 +21,8 @@ type Data struct {
 	ID      int
 }
 
-// NewEntityJSON creates entity
-func NewEntityJSON(filename string) (ent *EntityJSON) {
+// NewJSON creates entity
+func NewJSON(filename string) (ent *EntityJSON) {
 	ent = &EntityJSON{
 		filename: filename,
 		id:       0,

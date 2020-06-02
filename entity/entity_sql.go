@@ -15,8 +15,8 @@ type EntitySQL struct {
 	id       int
 }
 
-// NewEntitySQL creates Entity
-func NewEntitySQL(filename string) *EntitySQL {
+// NewSQL creates Entity
+func NewSQL(filename string) *EntitySQL {
 	db, err := sql.Open(sqlite.DriverName, filename)
 	if err != nil {
 		fmt.Println(err)

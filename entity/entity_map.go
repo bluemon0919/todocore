@@ -10,8 +10,8 @@ type EntityMap struct {
 	id int
 }
 
-// NewEntityMap creates Entity
-func NewEntityMap() *EntityMap {
+// NewMap creates Entity
+func NewMap() *EntityMap {
 	return &EntityMap{}
 }
 
