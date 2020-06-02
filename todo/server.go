@@ -7,15 +7,18 @@ import (
 	"todotool/entity"
 )
 
+// Response is server response
 type Response struct {
 	Items []Item `json:"Item"`
 }
 
+// AddRequest is a request parameter of Add function
 type AddRequest struct {
 	Title  string
 	Detail string
 }
 
+// UpdateRequest is a request parameter of Update function
 type UpdateRequest struct {
 	ID     int
 	Status int

@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// Client is todo client.
 type Client struct {
 	url string
 }
