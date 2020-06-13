@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 	"todotool/entity"
 )
 
@@ -100,7 +101,8 @@ func (srv *Server) put(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		for _, req := range reqs {
-			if err := srv.td.Add(req.Title, req.Detail); err != nil {
+			var t time.Time
+			if err := srv.td.Add(req.Title, req.Detail, t); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}

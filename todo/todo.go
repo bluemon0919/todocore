@@ -1,19 +1,23 @@
 package todo
 
-import "todotool/entity"
+import (
+	"time"
+	"todotool/entity"
+)
 
 // TODO TODOアプリを管理する
 type TODO struct {
 	srv *Server
-	e   entity.Entity
+	ent entity.Entity
 	id  int
 }
 
 // Item TODOアイテム
 type Item struct {
-	ID     int    `json:"ID"`
-	Title  string `json:"Title"`
-	Detail string `json:"Detail"`
+	ID       int       `json:"ID"`
+	Title    string    `json:"Title"`
+	Detail   string    `json:"Detail"`
+	Deadline time.Time `json:"Deadline"`
 }
 
 const (
@@ -23,34 +27,47 @@ const (
 	COMPLETE = 2
 	// ALL 全てのTODOアイテムを選択するための定義
 	ALL = 99
+
+	// DeadlineToday 本日が期限
+	DeadlineToday = 1
+	// DeadlineSoon もうすぐ期限
+	DeadlineSoon = 2
+
+	// SoonSettingStart 「もうすぐ期限」の期間設定
+	SoonSettingStart = 3 // 3日前
+	// SoonSettingEnd 「もうすぐ期限」の期間設定
+	SoonSettingEnd = 1 // 1日前
 )
 
 // NewTODO Creates TODO
-func NewTODO(e entity.Entity) *TODO {
+func NewTODO(ent entity.Entity) *TODO {
 	return &TODO{
-		e: e,
+		ent: ent,
 	}
 }
 
 // Add TODOアイテムを追加する
-func (td *TODO) Add(title, detail string) error {
-	ei := &entity.EntityItem{
-		Key:    td.e.NewID(),
+func (td *TODO) Add(title, detail string, date time.Time) error {
+	key := td.ent.NewID()
+	item := &entity.Item{
+		Key:    key,
 		Title:  title,
 		Detail: detail,
 		Status: ACTIVE,
+		Date:   date,
 	}
-	return td.e.Add(ei)
+	td.ent.Add(item)
+	return nil
 }
 
 // Delete TODOアイテムを削除する
 func (td *TODO) Delete(id int) error {
-	return td.e.Delete(id)
+	return td.ent.Delete(id)
 }
 
 // ChangeStatus TODOアイテムのステータスを変更する
 func (td *TODO) ChangeStatus(id, status int) error {
-	return td.e.Update(id, status)
+	return td.ent.Update(id, status)
 }
 
 // GetActive Active状態のTODOアイテムを取得する
@@ -63,17 +80,53 @@ func (td *TODO) GetComplete() ([]Item, error) {
 	return td.get(COMPLETE)
 }
 
-func (td *TODO) get(kind int) ([]Item, error) {
+// GetDeadline Deadline指定でTODOアイテムを取得する
+// startからendの間が期限のアイテムを取得します
+func (td *TODO) GetDeadline(deadline int) ([]Item, error) {
+	var start, end time.Time
+	today := time.Now().Truncate(24 * time.Hour)
+
+	// 期限が本日のアイテムを取得する
+	if DeadlineToday == deadline {
+		// 現在の日付を取得して、0:00-23:59を設定する
+		start = today
+		end = today.Add(time.Hour*23 + time.Minute*59)
+	}
+
+	// 期限が3日以内のアイテムを取得する
+	if DeadlineSoon == deadline {
+		// 3日前の0:00から1日前の23:59を設定する
+		start = today.Add(time.Hour * 24 * SoonSettingStart * -1)
+		end = today.Add(time.Hour*24*SoonSettingEnd*-1 + time.Minute*59)
+	}
+	entItems, err := td.ent.GetDate(start, end)
+	if err != nil {
+		return nil, err
+	}
 	var items []Item
-	eis, err := td.e.Get(kind)
+	for _, eitem := range entItems {
+		items = append(items, Item{
+			ID:       eitem.Key,
+			Title:    eitem.Title,
+			Detail:   eitem.Detail,
+			Deadline: eitem.Date,
+		})
+	}
+	return items, nil
+}
+
+func (td *TODO) get(status int) ([]Item, error) {
+	var items []Item
+	eis, err := td.ent.Get(status)
 	if err != nil {
 		return nil, err
 	}
 	for _, ei := range eis {
 		items = append(items, Item{
-			ei.Key,
-			ei.Title,
-			ei.Detail,
+			ID:       ei.Key,
+			Title:    ei.Title,
+			Detail:   ei.Detail,
+			Deadline: ei.Date,
 		})
 	}
 	return items, nil

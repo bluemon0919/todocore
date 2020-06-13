@@ -2,11 +2,12 @@ package entity
 
 import (
 	"errors"
+	"time"
 )
 
 // EntityMap データを管理する
 type EntityMap struct {
-	m  map[int]EntityItem
+	m  map[int]Item
 	id int
 }
 
@@ -16,52 +17,68 @@ func NewMap() *EntityMap {
 }
 
 // NewID 新しいIDを返す
-func (e *EntityMap) NewID() int {
-	e.id++
-	return e.id
+func (ent *EntityMap) NewID() int {
+	ent.id++
+	return ent.id
 }
 
 // Add Entityにアイテムを追加する
-func (e *EntityMap) Add(ei *EntityItem) error {
-	if e.m == nil {
-		e.m = make(map[int]EntityItem)
+func (ent *EntityMap) Add(item *Item) error {
+	if ent.m == nil {
+		ent.m = make(map[int]Item)
 	}
-	e.m[ei.Key] = *ei
+	ent.m[item.Key] = *item
 	return nil
 }
 
 // Delete Entityから指定キーを削除する
-func (e *EntityMap) Delete(key int) error {
-	if _, ok := e.m[key]; !ok {
+func (ent *EntityMap) Delete(key int) error {
+	if _, ok := ent.m[key]; !ok {
 		return errors.New("key does not exist")
 	}
-	delete(e.m, key)
+	delete(ent.m, key)
 	return nil
 }
 
 // Update Entityの指定のキーを入力ステータスでアップデートする
-func (e *EntityMap) Update(key, status int) error {
-	if _, ok := e.m[key]; !ok {
+func (ent *EntityMap) Update(key, status int) error {
+	if _, ok := ent.m[key]; !ok {
 		return errors.New("key does not exist")
 	}
-	item := e.m[key]
+	item := ent.m[key]
 	item.Status = status
-	e.m[key] = item
+	ent.m[key] = item
 	return nil
 }
 
 // Get Entityからアイテムを取得する
-func (e *EntityMap) Get(status int) (eis []EntityItem, err error) {
-	key := func(p1, p2 *EntityItem) bool {
+func (ent *EntityMap) Get(status int) (items []Item, err error) {
+	key := func(p1, p2 *Item) bool {
 		return p1.Key < p2.Key
 	}
 
-	for _, ei := range e.m {
+	for _, ei := range ent.m {
 		if status != ei.Status {
 			continue
 		}
-		eis = append(eis, ei)
+		items = append(items, ei)
 	}
-	By(key).Sort(eis)
+	By(key).Sort(items)
+	return
+}
+
+// GetDate 期間を指定してアイテムを取得する
+func (ent *EntityMap) GetDate(start, end time.Time) (items []Item, err error) {
+	err = nil
+	for _, data := range ent.m {
+		if start.After(data.Date) && end.Before(data.Date) {
+			items = append(items, data)
+		}
+	}
+
+	key := func(p1, p2 *Item) bool {
+		return p1.Key < p2.Key
+	}
+	By(key).Sort(items)
 	return
 }

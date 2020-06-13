@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	ent := entity.NewSQL("database.db")
+	ent := entity.NewMap()
 	if ent == nil {
 		log.Fatal("file create error")
 		return
