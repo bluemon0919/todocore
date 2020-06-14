@@ -71,7 +71,7 @@ func (ent *EntityMap) Get(status int) (items []Item, err error) {
 func (ent *EntityMap) GetDate(start, end time.Time) (items []Item, err error) {
 	err = nil
 	for _, data := range ent.m {
-		if start.After(data.Date) && end.Before(data.Date) {
+		if end.After(data.Date) && start.Before(data.Date) {
 			items = append(items, data)
 		}
 	}
