@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 	"todotool/entity"
 )
 
@@ -15,8 +14,9 @@ type Response struct {
 
 // AddRequest is a request parameter of Add function
 type AddRequest struct {
-	Title  string
-	Detail string
+	Title    string
+	Detail   string
+	Deadline string
 }
 
 // UpdateRequest is a request parameter of Update function
@@ -106,8 +106,8 @@ func (srv *Server) put(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		for _, req := range reqs {
-			var t time.Time
-			if err := srv.td.Add(req.Title, req.Detail, t); err != nil {
+			//var t time.Time
+			if err := srv.td.Add(req.Title, req.Detail, req.Deadline); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}

@@ -7,9 +7,10 @@ import (
 
 // TODO TODOアプリを管理する
 type TODO struct {
-	srv *Server
-	ent entity.Entity
-	id  int
+	srv      *Server
+	ent      entity.Entity
+	id       int
+	location *time.Location
 }
 
 // Item TODOアイテム
@@ -37,18 +38,33 @@ const (
 	SoonSettingStart = 3 // 3日前
 	// SoonSettingEnd 「もうすぐ期限」の期間設定
 	SoonSettingEnd = 1 // 1日前
+
+	// Layout 期日のレイアウト
+	Layout = "2006.01.02-15:04"
 )
 
 // NewTODO Creates TODO
 func NewTODO(ent entity.Entity) *TODO {
+	location, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		return nil
+	}
 	return &TODO{
-		ent: ent,
+		ent:      ent,
+		location: location,
 	}
 }
 
 // Add TODOアイテムを追加する
-func (td *TODO) Add(title, detail string, date time.Time) error {
+func (td *TODO) Add(title, detail, deadline string) error {
 	key := td.ent.NewID()
+
+	// ここでdeadlineをtime.Time形式にコンバートする
+	var date time.Time
+	if d, err := time.ParseInLocation(Layout, deadline, td.location); err == nil {
+		date = d
+	}
+
 	item := &entity.Item{
 		Key:    key,
 		Title:  title,

@@ -24,11 +24,12 @@ func NewClient(url string) (*Client, error) {
 }
 
 // Add TODOアイテムを追加する
-func (c *Client) Add(title, detail string) error {
+func (c *Client) Add(title, detail, deadline string) error {
 	datas := []AddRequest{
 		{
-			Title:  title,
-			Detail: detail,
+			Title:    title,
+			Detail:   detail,
+			Deadline: deadline,
 		},
 	}
 	bs, err := json.Marshal(datas)

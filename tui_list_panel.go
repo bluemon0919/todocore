@@ -97,7 +97,19 @@ func (l *ListPanel) Keybinding(g *GUI) {
 func (l *ListPanel) UpdateView() {
 	table := l.Clear()
 	for i, item := range l.items {
-		cell := tview.NewTableCell(fmt.Sprintf("%4d:%s\n", item.ID, item.Title))
+		sTitle := item.Title[:min(10, len(item.Title))]
+		deadline := item.Deadline.Format(todo.Layout)
+		sDeadline := deadline[:min(16, len(deadline))]
+		cell := tview.NewTableCell(
+			fmt.Sprintf("%4d:%-20s %-16s\n",
+				item.ID, sTitle, sDeadline))
 		table.SetCell(i, 0, cell)
 	}
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }
