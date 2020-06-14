@@ -121,3 +121,20 @@ func (c *Client) GetComplete() ([]Item, error) {
 	}
 	return res.Items, nil
 }
+
+// GetDeadlineToday 今日期限のアイテムを取得する
+func (c *Client) GetDeadlineToday() ([]Item, error) {
+	url := c.url + "/?kind=active&deadline=today"
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var res Response
+	dec := json.NewDecoder(resp.Body)
+	if err := dec.Decode(&res); err != nil {
+		return nil, err
+	}
+	return res.Items, nil
+}

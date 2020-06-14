@@ -66,12 +66,17 @@ func (srv *Server) get(w http.ResponseWriter, r *http.Request) {
 	enc := json.NewEncoder(w)
 
 	kind := r.FormValue("kind")
+	deadline := r.FormValue("deadline")
 	var items []Item
 	var err error
 
 	switch kind {
 	case "active":
-		items, err = srv.td.GetActive()
+		if deadline == "today" {
+			items, err = srv.td.GetDeadline(DeadlineToday)
+		} else {
+			items, err = srv.td.GetActive()
+		}
 	case "complete":
 		items, err = srv.td.GetComplete()
 	}
