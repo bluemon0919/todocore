@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"todotool/todo"
 
 	"github.com/rivo/tview"
@@ -11,21 +12,35 @@ import (
 type ListPanel struct {
 	items []todo.Item
 	*tview.Table
+	modelName string
+	title     string
 }
 
 // NewListPanel creates ListPanel
-func NewListPanel() *ListPanel {
+func NewListPanel(title string) *ListPanel {
 	p := &ListPanel{
-		Table: tview.NewTable(),
+		Table:     tview.NewTable(),
+		modelName: RandString(10),
+		title:     title,
 	}
 
 	p.SetBorder(true).
-		SetTitle("TODO List").
+		SetTitle(title).
 		SetTitleAlign(tview.AlignLeft)
 
 	p.SetSelectable(true, false)
 
 	return p
+}
+
+// RandString ランダムな文字列を作成する
+func RandString(n int) string {
+	const strset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = strset[rand.Intn(len(strset))]
+	}
+	return string(b)
 }
 
 // SetItems set files info
@@ -52,7 +67,7 @@ func (l *ListPanel) Keybinding(g *GUI) {
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 			item := l.SelectedItem()
 			if item == nil {
-				g.Pages.HidePage("modal")
+				g.Pages.HidePage(l.modelName)
 				g.UpdateView()
 				return
 			}
@@ -62,16 +77,16 @@ func (l *ListPanel) Keybinding(g *GUI) {
 			case "Delete":
 				g.td.Delete(item.ID)
 			}
-			g.Pages.HidePage("modal")
+			g.Pages.HidePage(l.modelName)
 			g.UpdateView()
 		})
-	g.Pages.AddPage("modal", modal, false, false)
+	g.Pages.AddPage(l.modelName, modal, false, false)
 
 	// Listのアイテムを選択した場合の動作を定義
 	l.SetSelectedFunc(func(row, column int) {
 		item := l.SelectedItem()
 		if item != nil {
-			g.Pages.ShowPage("modal")
+			g.Pages.ShowPage(l.modelName)
 		} else {
 			g.UpdateView()
 		}

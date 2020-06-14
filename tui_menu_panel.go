@@ -50,6 +50,9 @@ func (m *MenuPanel) Keybinding(g *GUI) {
 	m.AddItem("Edit", "", 'e', func() {
 		g.App.SetFocus(g.ListPanel)
 	})
+	m.AddItem("Todays", "", 't', func() {
+		g.App.SetFocus(g.TodayPanel)
+	})
 	m.AddItem("Quit", "", 'q', func() {
 		// Quitを選択した場合にアプリを終了する
 		g.App.Stop()
