@@ -33,10 +33,13 @@ type Server struct {
 
 // NewServer creates new Server
 func NewServer(addr string, ent entity.Entity) *Server {
-	return &Server{
+	srv := &Server{
 		addr: addr,
 		td:   NewTODO(ent),
 	}
+	r := NewProgramRegister(srv.td)
+	r.RegisterAndRun()
+	return srv
 }
 
 // StartService starts http server.

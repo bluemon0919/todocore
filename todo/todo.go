@@ -1,6 +1,7 @@
 package todo
 
 import (
+	"fmt"
 	"time"
 	"todotool/entity"
 )
@@ -33,6 +34,8 @@ const (
 	DeadlineToday = 1
 	// DeadlineSoon もうすぐ期限
 	DeadlineSoon = 2
+	// DeadlineExpired 期限切れ
+	DeadlineExpired = 3
 
 	// SoonSettingStart 「もうすぐ期限」の期間設定
 	SoonSettingStart = 3 // 3日前
@@ -99,23 +102,38 @@ func (td *TODO) GetComplete() ([]Item, error) {
 // GetDeadline Deadline指定でTODOアイテムを取得する
 // startからendの間が期限のアイテムを取得します
 func (td *TODO) GetDeadline(deadline int) ([]Item, error) {
-	var start, end time.Time
+
 	today := time.Now().Truncate(24 * time.Hour)
 
+	var start, end time.Time
+	var entItems []entity.Item
+	var err error
+
+	switch deadline {
 	// 期限が本日のアイテムを取得する
-	if DeadlineToday == deadline {
+	case DeadlineToday:
 		// 現在の日付を取得して、0:00-23:59を設定する
 		start = today
 		end = today.Add(time.Hour*23 + time.Minute*59)
-	}
+		entItems, err = td.ent.GetDate(start, end)
 
 	// 期限が3日以内のアイテムを取得する
-	if DeadlineSoon == deadline {
+	case DeadlineSoon:
 		// 3日前の0:00から1日前の23:59を設定する
 		start = today.Add(time.Hour * 24 * SoonSettingStart * -1)
 		end = today.Add(time.Hour*24*SoonSettingEnd*-1 + time.Minute*59)
+		entItems, err = td.ent.GetDate(start, end)
+
+		// 期限切れのアイテムを取得する
+	case DeadlineExpired:
+		start = today.Add(time.Hour * 24)
+		entItems, err = td.ent.GetAfterDate(start)
+
+	default:
+		return nil, fmt.Errorf("unsupported definition specified %d", deadline)
 	}
-	entItems, err := td.ent.GetDate(start, end)
+
+	//entItems, err := td.ent.GetDate(start, end)
 	if err != nil {
 		return nil, err
 	}
