@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"todotool/todo"
+	"todocore/todo"
 
 	"github.com/rivo/tview"
 )

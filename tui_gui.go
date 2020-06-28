@@ -1,7 +1,7 @@
 package main
 
 import (
-	"todotool/todo"
+	"todocore/todo"
 
 	"github.com/rivo/tview"
 )

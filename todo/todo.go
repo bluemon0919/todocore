@@ -3,7 +3,7 @@ package todo
 import (
 	"fmt"
 	"time"
-	"todotool/entity"
+	"todocore/entity"
 )
 
 // TODO TODOアプリを管理する

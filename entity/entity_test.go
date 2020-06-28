@@ -3,20 +3,21 @@ package entity
 import (
 	"log"
 	"testing"
+	"time"
 )
 
-var table = []EntityItem{
-	{0, "title1", "detail1", ACTIVE},
-	{1, "title2", "detail2", COMPLETE},
-	{2, "title3", "detail3", COMPLETE},
-	{3, "title4", "detail4", ACTIVE},
-	{4, "title5", "detail5", ACTIVE},
+var table = []Item{
+	{0, "title1", "detail1", ACTIVE, time.Time{}},
+	{1, "title2", "detail2", COMPLETE, time.Time{}},
+	{2, "title3", "detail3", COMPLETE, time.Time{}},
+	{3, "title4", "detail4", ACTIVE, time.Time{}},
+	{4, "title5", "detail5", ACTIVE, time.Time{}},
 }
 
 func TestGet(t *testing.T) {
 	entity := &EntityMap{}
 
-	entity.m = make(map[int]EntityItem)
+	entity.m = make(map[int]Item)
 	for i, ei := range table {
 		entity.m[i] = ei
 	}

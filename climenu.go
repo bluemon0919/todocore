@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
-	"todotool/todo"
+	"todocore/todo"
 )
 
 // Menu TODOリストを操作するメニュー
@@ -80,7 +80,13 @@ func (m *Menu) NewIssue() error {
 	if _, err := fmt.Fscanf(m.stdin, "%s", &detail); err != nil {
 		return err
 	}
-	return m.td.Add(title, detail)
+
+	fmt.Print("deadline:")
+	deadline := ""
+	if _, err := fmt.Fscanf(m.stdin, "%s", &deadline); err != nil {
+		return err
+	}
+	return m.td.Add(title, detail, deadline)
 }
 
 // SelectIssue TODOのリストを表示して処理を選択させる

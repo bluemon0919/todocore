@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"todotool/entity"
+	"todocore/entity"
 )
 
 // Response is server response

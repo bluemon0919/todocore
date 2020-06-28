@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"todotool/entity"
-	"todotool/todo"
+	"todocore/entity"
+	"todocore/todo"
 )
 
 func main() {
