@@ -8,12 +8,12 @@ import (
 
 // Menu TODOリストを操作するメニュー
 type Menu struct {
-	td    *todo.Client
+	td    todo.TodoInterface
 	stdin io.Reader
 }
 
 // NewMenu コマンドラインメニューでTODOを操作する
-func NewMenu(td *todo.Client, stdin io.Reader) *Menu {
+func NewMenu(td todo.TodoInterface, stdin io.Reader) *Menu {
 	return &Menu{
 		td:    td,
 		stdin: stdin,

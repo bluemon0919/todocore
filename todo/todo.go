@@ -6,6 +6,16 @@ import (
 	"todocore/entity"
 )
 
+// TodoInterface operates TODO
+type TodoInterface interface {
+	Add(title, detail, deadline string) error
+	Delete(id int) error
+	ChangeStatus(id, status int) error
+	GetActive() ([]Item, error)
+	GetComplete() ([]Item, error)
+	GetDeadline(deadline int) ([]Item, error)
+}
+
 // TODO TODOアプリを管理する
 type TODO struct {
 	srv      *Server

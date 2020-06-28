@@ -123,9 +123,17 @@ func (c *Client) GetComplete() ([]Item, error) {
 	return res.Items, nil
 }
 
-// GetDeadlineToday 今日期限のアイテムを取得する
-func (c *Client) GetDeadlineToday() ([]Item, error) {
-	url := c.url + "/?kind=active&deadline=today"
+// GetDeadline 期限によるアイテム取得を行う
+func (c *Client) GetDeadline(deadline int) ([]Item, error) {
+	url := c.url
+	switch deadline {
+	case DeadlineToday:
+		url = url + "/?kind=active&deadline=today"
+	case DeadlineSoon:
+		url = url + "/?kind=active&deadline=soon"
+	case DeadlineExpired:
+		url = url + "/?kind=active&deadline=expired"
+	}
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -138,4 +146,9 @@ func (c *Client) GetDeadlineToday() ([]Item, error) {
 		return nil, err
 	}
 	return res.Items, nil
+}
+
+// GetDeadlineToday 今日期限のアイテムを取得する
+func (c *Client) GetDeadlineToday() ([]Item, error) {
+	return c.GetDeadline(DeadlineToday)
 }
