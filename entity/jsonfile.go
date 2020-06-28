@@ -11,13 +11,13 @@ import (
 // EntityJSON データを管理する
 type EntityJSON struct {
 	filename string
-	m        map[int]EntityItem
+	m        map[int]Item
 	id       int
 }
 
 // Data 外部出力するJSONデータの構造体
 type Data struct {
-	ItemMap map[int]EntityItem
+	ItemMap map[int]Item
 	ID      int
 }
 
@@ -84,9 +84,9 @@ func (e *EntityJSON) NewID() int {
 }
 
 // Add Entityにアイテムを追加する
-func (e *EntityJSON) Add(ei *EntityItem) error {
+func (e *EntityJSON) Add(ei *Item) error {
 	if e.m == nil {
-		e.m = make(map[int]EntityItem)
+		e.m = make(map[int]Item)
 	}
 	e.m[ei.Key] = *ei
 	return e.Write()
@@ -113,8 +113,8 @@ func (e *EntityJSON) Update(key, status int) error {
 }
 
 // Get Entityからアイテムを取得する
-func (e *EntityJSON) Get(status int) (eis []EntityItem, err error) {
-	key := func(p1, p2 *EntityItem) bool {
+func (e *EntityJSON) Get(status int) (eis []Item, err error) {
+	key := func(p1, p2 *Item) bool {
 		return p1.Key < p2.Key
 	}
 

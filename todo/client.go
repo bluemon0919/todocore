@@ -24,11 +24,12 @@ func NewClient(url string) (*Client, error) {
 }
 
 // Add TODOアイテムを追加する
-func (c *Client) Add(title, detail string) error {
+func (c *Client) Add(title, detail, deadline string) error {
 	datas := []AddRequest{
 		{
-			Title:  title,
-			Detail: detail,
+			Title:    title,
+			Detail:   detail,
+			Deadline: deadline,
 		},
 	}
 	bs, err := json.Marshal(datas)
@@ -120,4 +121,34 @@ func (c *Client) GetComplete() ([]Item, error) {
 		return nil, err
 	}
 	return res.Items, nil
+}
+
+// GetDeadline 期限によるアイテム取得を行う
+func (c *Client) GetDeadline(deadline int) ([]Item, error) {
+	url := c.url
+	switch deadline {
+	case DeadlineToday:
+		url = url + "/?kind=active&deadline=today"
+	case DeadlineSoon:
+		url = url + "/?kind=active&deadline=soon"
+	case DeadlineExpired:
+		url = url + "/?kind=active&deadline=expired"
+	}
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var res Response
+	dec := json.NewDecoder(resp.Body)
+	if err := dec.Decode(&res); err != nil {
+		return nil, err
+	}
+	return res.Items, nil
+}
+
+// GetDeadlineToday 今日期限のアイテムを取得する
+func (c *Client) GetDeadlineToday() ([]Item, error) {
+	return c.GetDeadline(DeadlineToday)
 }

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"todotool/entity"
+	"todocore/entity"
 )
 
 // Response is server response
@@ -14,8 +14,9 @@ type Response struct {
 
 // AddRequest is a request parameter of Add function
 type AddRequest struct {
-	Title  string
-	Detail string
+	Title    string
+	Detail   string
+	Deadline string
 }
 
 // UpdateRequest is a request parameter of Update function
@@ -32,10 +33,13 @@ type Server struct {
 
 // NewServer creates new Server
 func NewServer(addr string, ent entity.Entity) *Server {
-	return &Server{
+	srv := &Server{
 		addr: addr,
 		td:   NewTODO(ent),
 	}
+	r := NewProgramRegister(srv.td)
+	r.RegisterAndRun()
+	return srv
 }
 
 // StartService starts http server.
@@ -65,12 +69,17 @@ func (srv *Server) get(w http.ResponseWriter, r *http.Request) {
 	enc := json.NewEncoder(w)
 
 	kind := r.FormValue("kind")
+	deadline := r.FormValue("deadline")
 	var items []Item
 	var err error
 
 	switch kind {
 	case "active":
-		items, err = srv.td.GetActive()
+		if deadline == "today" {
+			items, err = srv.td.GetDeadline(DeadlineToday)
+		} else {
+			items, err = srv.td.GetActive()
+		}
 	case "complete":
 		items, err = srv.td.GetComplete()
 	}
@@ -100,7 +109,8 @@ func (srv *Server) put(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		for _, req := range reqs {
-			if err := srv.td.Add(req.Title, req.Detail); err != nil {
+			//var t time.Time
+			if err := srv.td.Add(req.Title, req.Detail, req.Deadline); err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}

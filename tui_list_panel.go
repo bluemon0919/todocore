@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"todotool/todo"
+	"math/rand"
+	"todocore/todo"
 
 	"github.com/rivo/tview"
 )
@@ -11,21 +12,35 @@ import (
 type ListPanel struct {
 	items []todo.Item
 	*tview.Table
+	modelName string
+	title     string
 }
 
 // NewListPanel creates ListPanel
-func NewListPanel() *ListPanel {
+func NewListPanel(title string) *ListPanel {
 	p := &ListPanel{
-		Table: tview.NewTable(),
+		Table:     tview.NewTable(),
+		modelName: RandString(10),
+		title:     title,
 	}
 
 	p.SetBorder(true).
-		SetTitle("TODO List").
+		SetTitle(title).
 		SetTitleAlign(tview.AlignLeft)
 
 	p.SetSelectable(true, false)
 
 	return p
+}
+
+// RandString ランダムな文字列を作成する
+func RandString(n int) string {
+	const strset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = strset[rand.Intn(len(strset))]
+	}
+	return string(b)
 }
 
 // SetItems set files info
@@ -52,7 +67,7 @@ func (l *ListPanel) Keybinding(g *GUI) {
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 			item := l.SelectedItem()
 			if item == nil {
-				g.Pages.HidePage("modal")
+				g.Pages.HidePage(l.modelName)
 				g.UpdateView()
 				return
 			}
@@ -62,16 +77,16 @@ func (l *ListPanel) Keybinding(g *GUI) {
 			case "Delete":
 				g.td.Delete(item.ID)
 			}
-			g.Pages.HidePage("modal")
+			g.Pages.HidePage(l.modelName)
 			g.UpdateView()
 		})
-	g.Pages.AddPage("modal", modal, false, false)
+	g.Pages.AddPage(l.modelName, modal, false, false)
 
 	// Listのアイテムを選択した場合の動作を定義
 	l.SetSelectedFunc(func(row, column int) {
 		item := l.SelectedItem()
 		if item != nil {
-			g.Pages.ShowPage("modal")
+			g.Pages.ShowPage(l.modelName)
 		} else {
 			g.UpdateView()
 		}
@@ -82,7 +97,19 @@ func (l *ListPanel) Keybinding(g *GUI) {
 func (l *ListPanel) UpdateView() {
 	table := l.Clear()
 	for i, item := range l.items {
-		cell := tview.NewTableCell(fmt.Sprintf("%4d:%s\n", item.ID, item.Title))
+		sTitle := item.Title[:min(10, len(item.Title))]
+		deadline := item.Deadline.Format(todo.Layout)
+		sDeadline := deadline[:min(16, len(deadline))]
+		cell := tview.NewTableCell(
+			fmt.Sprintf("%4d:%-20s %-16s\n",
+				item.ID, sTitle, sDeadline))
 		table.SetCell(i, 0, cell)
 	}
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }

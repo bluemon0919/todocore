@@ -46,7 +46,7 @@ func (e *EntitySQL) NewID() int {
 }
 
 // Add Entityにアイテムを追加する
-func (e *EntitySQL) Add(ei *EntityItem) error {
+func (e *EntitySQL) Add(ei *Item) error {
 	switch {
 	case ei.Title == "":
 		return errors.New("Title is empty")
@@ -75,7 +75,7 @@ func (e *EntitySQL) Update(key, status int) error {
 }
 
 // Get Entityからアイテムを取得する
-func (e *EntitySQL) Get(status int) (eis []EntityItem, err error) {
+func (e *EntitySQL) Get(status int) (eis []Item, err error) {
 	// TODO : キーでソートする
 	const sql = "SELECT * FROM item WHERE status = ?"
 	rows, err := e.db.Query(sql, status)
@@ -84,7 +84,7 @@ func (e *EntitySQL) Get(status int) (eis []EntityItem, err error) {
 	}
 
 	for rows.Next() {
-		var item EntityItem
+		var item Item
 		if err := rows.Scan(&item.Key, &item.Title, &item.Detail, &item.Status); err != nil {
 			return nil, err
 		}

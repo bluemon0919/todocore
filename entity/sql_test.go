@@ -43,7 +43,7 @@ func TestNewSQL(t *testing.T) {
 	}
 }
 
-func TestAdd(t *testing.T) {
+func TestSQLAdd(t *testing.T) {
 
 	// ファイルを削除する
 	if _, err := os.Stat(TestEntitySQLTestFileName); !os.IsNotExist(err) {
@@ -54,7 +54,7 @@ func TestAdd(t *testing.T) {
 
 	ent := NewSQL(TestEntitySQLTestFileName)
 
-	item := EntityItem{
+	item := Item{
 		Detail: "hogehoge",
 		Status: ACTIVE,
 	}
@@ -62,7 +62,7 @@ func TestAdd(t *testing.T) {
 		log.Fatal("register even if the Title is empty")
 	}
 
-	item = EntityItem{
+	item = Item{
 		Title:  "hoge",
 		Status: ACTIVE,
 	}
@@ -70,7 +70,7 @@ func TestAdd(t *testing.T) {
 		log.Fatal("register even if the Detail is empty")
 	}
 
-	item = EntityItem{
+	item = Item{
 		Title:  "hoge",
 		Detail: "hogehoge",
 	}
@@ -78,7 +78,7 @@ func TestAdd(t *testing.T) {
 		log.Fatal("register even if the Status is empty")
 	}
 
-	item = EntityItem{
+	item = Item{
 		Title:  "hoge",
 		Detail: "hogehoge",
 		Status: ACTIVE,
@@ -95,7 +95,7 @@ func TestAdd(t *testing.T) {
 	}
 }
 
-func TestDelete(t *testing.T) {
+func TestSQLDelete(t *testing.T) {
 
 	// ファイルを削除する
 	if _, err := os.Stat(TestEntitySQLTestFileName); !os.IsNotExist(err) {
@@ -106,7 +106,7 @@ func TestDelete(t *testing.T) {
 
 	ent := NewSQL(TestEntitySQLTestFileName)
 
-	item := EntityItem{
+	item := Item{
 		Title:  "hoge",
 		Detail: "hogehoge",
 		Status: ACTIVE,
@@ -128,7 +128,7 @@ func TestDelete(t *testing.T) {
 	}
 }
 
-func TestUpdate(t *testing.T) {
+func TestSQLUpdate(t *testing.T) {
 
 	// ファイルを削除する
 	if _, err := os.Stat(TestEntitySQLTestFileName); !os.IsNotExist(err) {
@@ -139,7 +139,7 @@ func TestUpdate(t *testing.T) {
 
 	ent := NewSQL(TestEntitySQLTestFileName)
 
-	item := EntityItem{
+	item := Item{
 		Title:  "hoge",
 		Detail: "hogehoge",
 		Status: ACTIVE,
@@ -161,7 +161,7 @@ func TestUpdate(t *testing.T) {
 	}
 }
 
-func TestGet(t *testing.T) {
+func TestSQLGet(t *testing.T) {
 
 	// ファイルを削除する
 	if _, err := os.Stat(TestEntitySQLTestFileName); !os.IsNotExist(err) {
@@ -172,7 +172,7 @@ func TestGet(t *testing.T) {
 
 	ent := NewSQL(TestEntitySQLTestFileName)
 
-	item := EntityItem{
+	item := Item{
 		Title:  "hoge",
 		Detail: "hogehoge",
 		Status: ACTIVE,

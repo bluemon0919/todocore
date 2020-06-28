@@ -2,30 +2,34 @@ package entity
 
 import (
 	"sort"
+	"time"
 )
 
 // Entity operates entity
 type Entity interface {
 	NewID() int
-	Add(ei *EntityItem) error
+	Add(item *Item) error
 	Delete(key int) error
 	Update(key, status int) error
-	Get(status int) (eis []EntityItem, err error)
+	Get(status int) (items []Item, err error)
+	GetDate(start, end time.Time) (items []Item, err error)
+	GetAfterDate(start time.Time) (items []Item, err error)
 }
 
-// EntityItem Entityに書き込むアイテム
-type EntityItem struct {
+// Item Entityに書き込むアイテム
+type Item struct {
 	Key    int
 	Title  string
 	Detail string
 	Status int
+	Date   time.Time
 }
 
 // By is the type of a "less" function that defines the ordering of its Planet arguments.
-type By func(p1, p2 *EntityItem) bool
+type By func(p1, p2 *Item) bool
 
 // Sort is a method on the function type, By, that sorts the argument slice according to the function.
-func (by By) Sort(items []EntityItem) {
+func (by By) Sort(items []Item) {
 	es := &entityItemSorter{
 		items: items,
 		by:    by, // The Sort method's receiver is the function (closure) that defines the sort order.
@@ -35,8 +39,8 @@ func (by By) Sort(items []EntityItem) {
 
 // planetSorter joins a By function and a slice of Planets to be sorted.
 type entityItemSorter struct {
-	items []EntityItem
-	by    func(p1, p2 *EntityItem) bool // Closure used in the Less method.
+	items []Item
+	by    func(p1, p2 *Item) bool // Closure used in the Less method.
 }
 
 // Len is part of sort.Interface.

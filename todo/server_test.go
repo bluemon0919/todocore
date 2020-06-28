@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http/httptest"
 	"testing"
-	"todotool/entity"
+	"todocore/entity"
 )
 
 func TestServerGetActive(t *testing.T) {

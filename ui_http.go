@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
-	"todotool/todo"
+	"todocore/todo"
 )
 
 // Handler HTTPハンドラおよびHTML形式のユーザーインターフェースを提供する
@@ -107,7 +107,8 @@ func (h *Handler) inputPostHandler(w http.ResponseWriter, r *http.Request) {
 	// 入力テキストをレコードに登録する
 	title := r.FormValue("title")
 	detail := r.FormValue("detail")
+	deadline := r.FormValue("deadline")
 
-	h.td.Add(title, detail)
+	h.td.Add(title, detail, deadline)
 	http.Redirect(w, r, "/list", http.StatusFound)
 }

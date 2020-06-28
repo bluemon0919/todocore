@@ -31,11 +31,13 @@ func (m *MenuPanel) Keybinding(g *GUI) {
 		iform := tview.NewForm()
 		iform.AddInputField("Title", "", 20, nil, nil).
 			AddInputField("Detail", "", 20, nil, nil).
+			AddInputField("Deadline", "", 20, nil, nil).
 			AddButton("Save", func() {
 				// Saveを選択した場合に、TODOリストにアイテムを追加する
 				title := iform.GetFormItem(0).(*tview.InputField).GetText()
 				detail := iform.GetFormItem(1).(*tview.InputField).GetText()
-				if err := g.td.Add(title, detail); err != nil {
+				deadline := iform.GetFormItem(2).(*tview.InputField).GetText()
+				if err := g.td.Add(title, detail, deadline); err != nil {
 					g.App.Stop()
 					log.Fatal(err)
 				}
@@ -49,6 +51,9 @@ func (m *MenuPanel) Keybinding(g *GUI) {
 	})
 	m.AddItem("Edit", "", 'e', func() {
 		g.App.SetFocus(g.ListPanel)
+	})
+	m.AddItem("Todays", "", 't', func() {
+		g.App.SetFocus(g.TodayPanel)
 	})
 	m.AddItem("Quit", "", 'q', func() {
 		// Quitを選択した場合にアプリを終了する
