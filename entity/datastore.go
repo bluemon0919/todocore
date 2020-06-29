@@ -116,7 +116,7 @@ func (ent *EntityDatastore) get(query *datastore.Query) (items []Item, err error
 	}
 	defer client.Close()
 
-	if _, err := client.GetAll(ctx, query, items); err != nil {
+	if _, err := client.GetAll(ctx, query, &items); err != nil {
 		return nil, err
 	}
 
