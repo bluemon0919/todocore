@@ -77,10 +77,11 @@ func (ent *EntityDatastore) Update(key, status int) error {
 	it := client.Run(ctx, query)
 
 	var item Item
-	dkey, err := it.Next(item)
+	dkey, err := it.Next(&item)
 	if err == iterator.Done {
 		return err
 	}
+	item.Status = status
 	_, err = client.Put(ctx, dkey, &item)
 	return err
 }
