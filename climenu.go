@@ -139,7 +139,7 @@ func (m *Menu) ShowComplete() error {
 	}
 
 	for _, item := range items {
-		fmt.Println(item)
+		fmt.Printf("%d: %s\n", item.ID, item.Title)
 	}
 	return nil
 }
