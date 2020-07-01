@@ -123,9 +123,7 @@ func (m *Menu) SelectIssue() error {
 	case 1:
 		err = m.td.ChangeStatus(n, todo.COMPLETE)
 	case 2:
-		fmt.Println("delete>>")
 		err = m.td.Delete(n)
-		fmt.Println("<<delete err=", err)
 	}
 	return err
 }

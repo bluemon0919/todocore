@@ -55,7 +55,7 @@ func (ent *EntityDatastore) Delete(key int) error {
 	query := datastore.NewQuery(ent.entityType).Filter("Key = ", key)
 	it := client.Run(ctx, query)
 	var item Item
-	dkey, err := it.Next(item)
+	dkey, err := it.Next(&item)
 	if err == iterator.Done {
 		return err
 	}
