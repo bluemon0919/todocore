@@ -21,12 +21,10 @@
         <form class="list_operation" action="/post" method="post">
             {{range .}}
             <p>
-                <input type="submit" value="完了" name="complete">
+                <input type="submit" value="完了" name="{{.Title}}{{.Deadline}}">
                 {{.Title}}
                 {{.Weekday}}
                 {{.Deadline}}
-                <input type="hidden" value={{.Title}} name="title">
-                <input type="hidden" value={{.Deadline}} name="deadline">
             </p>
             {{end}}
         </form>

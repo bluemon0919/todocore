@@ -189,19 +189,11 @@ func (srv *Server) postHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/list", http.StatusFound)
 		return
 	}
-	if "" == r.FormValue("complete") {
-		http.Redirect(w, r, "/list", http.StatusFound)
-		return
-	}
-
-	// タイトルで検索して完了させる
-	selectedTitle := r.FormValue("title")
-	selectedDeadline := r.FormValue("deadline")
 
 	items, _ := srv.td.GetActive()
 	for _, item := range items {
-		if item.Title == selectedTitle &&
-			item.Deadline.Format(Layout) == selectedDeadline {
+		value := r.FormValue(item.Title + item.Deadline.Format(Layout))
+		if "" != value {
 			srv.td.ChangeStatus(item.ID, COMPLETE)
 		}
 	}
