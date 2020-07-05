@@ -3,6 +3,7 @@ package todo
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
 	"todocore/entity"
 )
@@ -45,10 +46,11 @@ func NewServer(addr string, ent entity.Entity) *Server {
 // StartService starts http server.
 func (srv *Server) StartService() error {
 	http.HandleFunc("/", srv.handler)
+	http.HandleFunc("/list", srv.listHandler)
+	http.HandleFunc("/post", srv.postHandler)
 	return http.ListenAndServe(srv.addr, nil)
 }
 
-// getHandler
 func (srv *Server) handler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -149,4 +151,59 @@ func (srv *Server) delete(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+}
+
+// listHandler writes list to http.ResponseWriter
+// display the list in html
+func (srv *Server) listHandler(w http.ResponseWriter, r *http.Request) {
+
+	items, _ := srv.td.GetActive()
+
+	type ListItem struct {
+		Title    string
+		Weekday  string
+		Deadline string
+	}
+
+	var lis []ListItem
+	for _, item := range items {
+		li := ListItem{
+			Title:    item.Title,
+			Weekday:  item.Deadline.Weekday().String(),
+			Deadline: item.Deadline.Format(Layout),
+		}
+		lis = append(lis, li)
+	}
+
+	tpl := template.Must(template.ParseFiles("static/list2.html"))
+	tpl.Execute(w, lis)
+}
+
+// postHandler reflects the input result from html in the list
+func (srv *Server) postHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Redirect(w, r, "/list", http.StatusFound)
+		return
+	}
+	if err := r.ParseForm(); err != nil {
+		http.Redirect(w, r, "/list", http.StatusFound)
+		return
+	}
+	if "" == r.FormValue("complete") {
+		http.Redirect(w, r, "/list", http.StatusFound)
+		return
+	}
+
+	// タイトルで検索して完了させる
+	selectedTitle := r.FormValue("title")
+	selectedDeadline := r.FormValue("deadline")
+
+	items, _ := srv.td.GetActive()
+	for _, item := range items {
+		if item.Title == selectedTitle &&
+			item.Deadline.Format(Layout) == selectedDeadline {
+			srv.td.ChangeStatus(item.ID, COMPLETE)
+		}
+	}
+	http.Redirect(w, r, "/list", http.StatusFound)
 }
