@@ -22,14 +22,16 @@ func main() {
 		return
 	}
 	srv := todo.NewServer(":8080", ent)
-	go srv.StartService()
+	srv.StartService()
 
 	client, _ := todo.NewClient("http://localhost:8080")
+	/*
+		ui := NewMenu(client, os.Stdin)
+		if err := ui.Run(); err != nil {
+			log.Fatal(err)
+		}
+	*/
+	ui := NewHandler(client, "http://localhost:8080")
+	ui.Run()
 
-	ui := NewMenu(client, os.Stdin)
-	//ui := NewGUI(client)
-	//ui := NewHandler(client, ":8000")
-	if err := ui.Run(); err != nil {
-		log.Fatal(err)
-	}
 }

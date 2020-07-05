@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>RadioRemainder</title>
+<meta name="viewport" content="width=device-width,
+ initial-scale=1.0,user-scalable=yes" />
+    <style>
+        input{
+            font-size:16px;
+            width: 3em;
+        }
+    </style>
+</head>
+<body>
+    <!-- リスト表示エリア -->
+	<div class="ListSample">
+        <h2>
+            今週のラジオプログラムリスト
+        </h2>
+        <form class="list_operation" action="/post" method="post">
+            {{range .}}
+            <p>
+                <input type="submit" value="完了" name="complete">
+                {{.Title}}
+                {{.Weekday}}
+                {{.Deadline}}
+                <input type="hidden" value={{.Title}} name="title">
+                <input type="hidden" value={{.Deadline}} name="deadline">
+            </p>
+            {{end}}
+        </form>
+    </div>
+    <!-- リスト表示エリアここまで -->
+</body>
+</html>
