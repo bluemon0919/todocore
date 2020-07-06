@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"sort"
 	"todocore/entity"
 )
 
@@ -30,6 +31,44 @@ type UpdateRequest struct {
 type Server struct {
 	addr string
 	td   *TODO
+}
+
+type ListItem struct {
+	Title    string
+	Weekday  string
+	Deadline string
+}
+
+type By func(p1, p2 *ListItem) bool
+
+// planetSorter joins a By function and a slice of Planets to be sorted.
+type itemSorter struct {
+	items []ListItem
+	by    func(p1, p2 *ListItem) bool // Closure used in the Less method.
+}
+
+// Sort is a method on the function type, By, that sorts the argument slice according to the function.
+func (by By) Sort(items []ListItem) {
+	s := &itemSorter{
+		items: items,
+		by:    by, // The Sort method's receiver is the function (closure) that defines the sort order.
+	}
+	sort.Sort(s)
+}
+
+// Len is part of sort.Interface.
+func (s *itemSorter) Len() int {
+	return len(s.items)
+}
+
+// Swap is part of sort.Interface.
+func (s *itemSorter) Swap(i, j int) {
+	s.items[i], s.items[j] = s.items[j], s.items[i]
+}
+
+// Less is part of sort.Interface. It is implemented by calling the "by" closure in the sorter.
+func (s *itemSorter) Less(i, j int) bool {
+	return s.by(&s.items[i], &s.items[j])
 }
 
 // NewServer creates new Server
@@ -159,12 +198,6 @@ func (srv *Server) listHandler(w http.ResponseWriter, r *http.Request) {
 
 	items, _ := srv.td.GetActive()
 
-	type ListItem struct {
-		Title    string
-		Weekday  string
-		Deadline string
-	}
-
 	var lis []ListItem
 	for _, item := range items {
 		li := ListItem{
@@ -174,6 +207,12 @@ func (srv *Server) listHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		lis = append(lis, li)
 	}
+
+	// Keyでソートする
+	keysort := func(p1, p2 *ListItem) bool {
+		return p1.Deadline < p2.Deadline
+	}
+	By(keysort).Sort(lis)
 
 	tpl := template.Must(template.ParseFiles("static/list2.html"))
 	tpl.Execute(w, lis)
