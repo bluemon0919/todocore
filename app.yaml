@@ -1,0 +1,10 @@
+runtime: go114
+
+handlers:
+- url: /.*
+  script: auto
+
+env_variables:  
+  PROJECT_ID: ""
+  SHEET_ID: ""
+
