@@ -29,8 +29,9 @@ type UpdateRequest struct {
 
 // Server provides http server
 type Server struct {
-	addr string
-	td   *TODO
+	addr      string
+	td        *TODO
+	remainder *RadioRemainder
 }
 
 type ListItem struct {
@@ -73,18 +74,20 @@ func (s *itemSorter) Less(i, j int) bool {
 
 // NewServer creates new Server
 func NewServer(addr string, ent entity.Entity) *Server {
+	td := NewTODO(ent)
+	r := NewRadioRemainder(td)
 	srv := &Server{
-		addr: addr,
-		td:   NewTODO(ent),
+		addr:      addr,
+		td:        td,
+		remainder: r,
 	}
-	r := NewProgramRegister(srv.td)
-	r.RegisterAndRun()
+	r.Do()
 	return srv
 }
 
 // StartService starts http server.
 func (srv *Server) StartService() error {
-	http.HandleFunc("/", srv.handler)
+	//http.HandleFunc("/", srv.handler)
 	http.HandleFunc("/list", srv.listHandler)
 	http.HandleFunc("/post", srv.postHandler)
 	return http.ListenAndServe(srv.addr, nil)
@@ -195,7 +198,7 @@ func (srv *Server) delete(w http.ResponseWriter, r *http.Request) {
 // listHandler writes list to http.ResponseWriter
 // display the list in html
 func (srv *Server) listHandler(w http.ResponseWriter, r *http.Request) {
-
+	srv.remainder.Do()
 	items, _ := srv.td.GetActive()
 
 	var lis []ListItem

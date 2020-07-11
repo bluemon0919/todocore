@@ -170,7 +170,7 @@ func (td *TODO) get(status int) ([]Item, error) {
 			ID:       ei.Key,
 			Title:    ei.Title,
 			Detail:   ei.Detail,
-			Deadline: ei.Date,
+			Deadline: ei.Date.In(td.location),
 		})
 	}
 	return items, nil

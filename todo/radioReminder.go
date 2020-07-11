@@ -50,8 +50,51 @@ func (r *RadioRemainder) AddProgram(program RadioProgram) {
 
 // Do ラジオリマインダーを実行する
 func (r *RadioRemainder) Do() {
-	// 番組をTODOリストに登録する
-	for _, p := range r.programs {
+	// 登録済みのプログラムリストを取得する
+	actives, err := r.todo.GetActive()
+	if err != nil {
+		return
+	}
+	completes, err := r.todo.GetComplete()
+	if err != nil {
+		return
+	}
+
+	// GoogleSheetsからリストを取得する
+	sheetDatas, _ := ReadGoogleSheets()
+	var programs []RadioProgram
+	for _, row := range sheetDatas.Values {
+		flg := true
+		for _, a := range actives {
+			if a.Title == fmt.Sprint(row[0]) &&
+				a.Deadline.Format(RadioLayout) == fmt.Sprint(row[3]) {
+				flg = false
+				break
+			}
+		}
+		if !flg {
+			continue
+		}
+		for _, c := range completes {
+			if c.Title == fmt.Sprint(row[0]) &&
+				c.Deadline.Format(RadioLayout) == fmt.Sprint(row[3]) {
+				flg = false
+				break
+			}
+		}
+		if !flg {
+			continue
+		}
+		programs = append(programs, RadioProgram{
+			name:      fmt.Sprint(row[0]),
+			weekday:   Weekday(fmt.Sprint(row[1])),
+			startTime: fmt.Sprint(row[2]),
+			endTime:   fmt.Sprint(row[3]),
+		})
+	}
+
+	// プログラムを登録する
+	for _, p := range programs {
 		deadline, err := NextDate(&p)
 		if err != nil {
 			fmt.Println(err)
@@ -59,9 +102,6 @@ func (r *RadioRemainder) Do() {
 		}
 		r.todo.Add(p.name, "", deadline)
 	}
-
-	// チェッカーを起動する
-	r.runnerSetup()
 }
 
 // NextDate 次の日程を設定する
@@ -97,23 +137,15 @@ func (r *RadioRemainder) runnerSetup() {
 
 // Run will get triggered automatically.
 func (r RadioRemainder) Run() {
+	// 期限切れのプログラムを削除する
 	items, err := r.todo.GetDeadline(DeadlineExpired)
-	//items, err := r.todo.GetComplete() // デバッグ
 	if err != nil {
 		return
 	}
 	for _, item := range items {
-		// 同じプログラムを登録する
-		for _, p := range r.programs {
-			if p.name == item.Title {
-				deadline, err := NextDate(&p)
-				if err != nil {
-					fmt.Println(err)
-					continue
-				}
-				r.todo.Delete(item.ID)
-				r.todo.Add(p.name, "", deadline)
-			}
-		}
+		r.todo.Delete(item.ID)
 	}
+
+	// 次週のプログラムを追加する
+	r.Do()
 }

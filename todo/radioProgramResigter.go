@@ -5,9 +5,8 @@ import (
 	"time"
 )
 
-var programs []RadioProgram = []RadioProgram{
+var sample []RadioProgram = []RadioProgram{
 	{
-		// name:      "よなよな",
 		name:      "よなよな水曜日",
 		weekday:   time.Wednesday,
 		startTime: "22:00",
