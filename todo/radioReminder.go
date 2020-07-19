@@ -65,9 +65,16 @@ func (r *RadioRemainder) Do() {
 	var programs []RadioProgram
 	for _, row := range sheetDatas.Values {
 		flg := true
+
+		p := RadioProgram{
+			weekday: Weekday(fmt.Sprint(row[1])),
+			endTime: fmt.Sprint(row[3]),
+		}
+		next, _ := NextDate(&p)
+
 		for _, a := range actives {
 			if a.Title == fmt.Sprint(row[0]) &&
-				a.Deadline.Format(RadioLayout) == fmt.Sprint(row[3]) {
+				a.Deadline.Format(Layout) == next {
 				flg = false
 				break
 			}
@@ -77,7 +84,7 @@ func (r *RadioRemainder) Do() {
 		}
 		for _, c := range completes {
 			if c.Title == fmt.Sprint(row[0]) &&
-				c.Deadline.Format(RadioLayout) == fmt.Sprint(row[3]) {
+				c.Deadline.Format(Layout) == next {
 				flg = false
 				break
 			}
