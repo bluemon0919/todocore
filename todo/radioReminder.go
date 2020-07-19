@@ -3,8 +3,6 @@ package todo
 import (
 	"fmt"
 	"time"
-
-	"github.com/bamzi/jobrunner"
 )
 
 const checkInterval = 10
@@ -48,7 +46,7 @@ func (r *RadioRemainder) AddProgram(program RadioProgram) {
 	r.programs = append(r.programs, program)
 }
 
-// Do ラジオリマインダーを実行する
+// Do はラジオリマインダーを実行する
 func (r *RadioRemainder) Do() {
 	// 登録済みのプログラムリストを取得する
 	actives, err := r.todo.GetActive()
@@ -135,13 +133,6 @@ func NextDate(program *RadioProgram) (string, error) {
 	return next.Format(Layout), nil
 }
 
-// Setup job runner
-func (r *RadioRemainder) runnerSetup() {
-	spec := fmt.Sprintf("@every %dm", checkInterval)
-	jobrunner.Start()
-	jobrunner.Schedule(spec, r)
-}
-
 // Run will get triggered automatically.
 func (r RadioRemainder) Run() {
 	// 期限切れのプログラムを削除する
@@ -155,4 +146,25 @@ func (r RadioRemainder) Run() {
 
 	// 次週のプログラムを追加する
 	r.Do()
+}
+
+// Weekday は曜日の文字列を与えて、それに対応するtimeパッケージのWeekdayの値を返します
+func Weekday(weekday string) time.Weekday {
+	switch weekday {
+	case "Sunday":
+		return time.Sunday
+	case "Monday":
+		return time.Monday
+	case "Tuesday":
+		return time.Tuesday
+	case "Wednesday":
+		return time.Wednesday
+	case "Thursday":
+		return time.Thursday
+	case "Friday":
+		return time.Friday
+	case "Saturday":
+		return time.Saturday
+	}
+	return time.Sunday
 }

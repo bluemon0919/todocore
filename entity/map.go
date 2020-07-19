@@ -83,11 +83,27 @@ func (ent *EntityMap) GetDate(start, end time.Time) (items []Item, err error) {
 	return
 }
 
-// GetDate 期間を指定してアイテムを取得する
+// GetAfterDate は基準日時以降のアイテムを取得する
 func (ent *EntityMap) GetAfterDate(start time.Time) (items []Item, err error) {
 	err = nil
 	for _, data := range ent.m {
-		if start.Before(data.Date) {
+		if start.After(data.Date) {
+			items = append(items, data)
+		}
+	}
+
+	key := func(p1, p2 *Item) bool {
+		return p1.Key < p2.Key
+	}
+	By(key).Sort(items)
+	return
+}
+
+// GetBeforeDate は基準日時以前のアイテムを取得する
+func (ent *EntityMap) GetBeforeDate(base time.Time) (items []Item, err error) {
+	err = nil
+	for _, data := range ent.m {
+		if base.Before(data.Date) {
 			items = append(items, data)
 		}
 	}

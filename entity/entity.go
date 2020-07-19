@@ -13,7 +13,8 @@ type Entity interface {
 	Update(key, status int) error
 	Get(status int) (items []Item, err error)
 	GetDate(start, end time.Time) (items []Item, err error)
-	GetAfterDate(start time.Time) (items []Item, err error)
+	GetAfterDate(base time.Time) (items []Item, err error)
+	GetBeforeDate(base time.Time) (items []Item, err error)
 }
 
 // Item Entityに書き込むアイテム

@@ -109,41 +109,42 @@ func (td *TODO) GetComplete() ([]Item, error) {
 	return td.get(COMPLETE)
 }
 
-// GetDeadline Deadline指定でTODOアイテムを取得する
+// GetDeadline はDeadline指定でTODOアイテムを取得する
 // startからendの間が期限のアイテムを取得します
 func (td *TODO) GetDeadline(deadline int) ([]Item, error) {
+	loc, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		return nil, err
+	}
+	now := time.Now().In(loc)
+	today := now.Truncate(time.Hour).Add(-time.Duration(now.Hour()) * time.Hour)
 
-	today := time.Now().Truncate(24 * time.Hour)
-
-	var start, end time.Time
 	var entItems []entity.Item
-	var err error
 
 	switch deadline {
 	// 期限が本日のアイテムを取得する
 	case DeadlineToday:
 		// 現在の日付を取得して、0:00-23:59を設定する
-		start = today
-		end = today.Add(time.Hour*23 + time.Minute*59)
+		start := today
+		end := today.Add(time.Hour*23 + time.Minute*59)
 		entItems, err = td.ent.GetDate(start, end)
 
 	// 期限が3日以内のアイテムを取得する
 	case DeadlineSoon:
 		// 3日前の0:00から1日前の23:59を設定する
-		start = today.Add(time.Hour * 24 * SoonSettingStart * -1)
-		end = today.Add(time.Hour*24*SoonSettingEnd*-1 + time.Minute*59)
+		start := today.Add(time.Hour * 24 * SoonSettingStart * -1)
+		end := today.Add(time.Hour*24*SoonSettingEnd*-1 + time.Minute*59)
 		entItems, err = td.ent.GetDate(start, end)
 
 		// 期限切れのアイテムを取得する
 	case DeadlineExpired:
-		start = today.Add(time.Hour * 24)
-		entItems, err = td.ent.GetAfterDate(start)
+		base := today
+		entItems, err = td.ent.GetBeforeDate(base)
 
 	default:
 		return nil, fmt.Errorf("unsupported definition specified %d", deadline)
 	}
 
-	//entItems, err := td.ent.GetDate(start, end)
 	if err != nil {
 		return nil, err
 	}

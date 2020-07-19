@@ -101,8 +101,15 @@ func (ent *EntityDatastore) GetDate(start, end time.Time) (items []Item, err err
 }
 
 // GetAfterDate 期間を指定してアイテムを取得する
-func (ent *EntityDatastore) GetAfterDate(start time.Time) (items []Item, err error) {
-	query := datastore.NewQuery(ent.entityType).Filter("Date >= ", start)
+func (ent *EntityDatastore) GetAfterDate(base time.Time) (items []Item, err error) {
+	query := datastore.NewQuery(ent.entityType).Filter("Date >= ", base)
+	items, err = ent.get(query)
+	return
+}
+
+// GetBeforeDate は基準日時以前のアイテムを取得する
+func (ent *EntityDatastore) GetBeforeDate(base time.Time) (items []Item, err error) {
+	query := datastore.NewQuery(ent.entityType).Filter("Date <= ", base)
 	items, err = ent.get(query)
 	return
 }

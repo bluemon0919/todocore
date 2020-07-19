@@ -81,7 +81,6 @@ func NewServer(addr string, ent entity.Entity) *Server {
 		td:        td,
 		remainder: r,
 	}
-	r.Do()
 	return srv
 }
 
@@ -198,7 +197,7 @@ func (srv *Server) delete(w http.ResponseWriter, r *http.Request) {
 // listHandler writes list to http.ResponseWriter
 // display the list in html
 func (srv *Server) listHandler(w http.ResponseWriter, r *http.Request) {
-	srv.remainder.Do()
+	srv.remainder.Run()
 	items, _ := srv.td.GetActive()
 
 	var lis []ListItem

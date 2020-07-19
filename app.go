@@ -10,7 +10,6 @@ import (
 )
 
 func main() {
-	//ent := entity.NewMap()
 	projectID := os.Getenv("PROJECT_ID")
 	if "" == projectID {
 		fmt.Println("PROJECT_ID is not set")
@@ -25,12 +24,6 @@ func main() {
 	srv.StartService()
 
 	client, _ := todo.NewClient("http://localhost:8080")
-	/*
-		ui := NewMenu(client, os.Stdin)
-		if err := ui.Run(); err != nil {
-			log.Fatal(err)
-		}
-	*/
 	ui := NewHandler(client, "http://localhost:8080")
 	ui.Run()
 
