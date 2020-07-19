@@ -20,12 +20,27 @@
         </h2>
         <form class="list_operation" action="/post" method="post">
             {{range .}}
-            <p>
-                <input type="submit" value="完了" name="{{.Title}}{{.Deadline}}">
-                {{.Title}}
-                {{.Weekday}}
-                {{.Deadline}}
-            </p>
+
+            <table>
+                <tr>
+                  <th rowspan="2">
+                    <input type="submit" value="完了" name="{{.Title}}{{.Deadline}}">
+                  </th>
+                  <td colspan="2">{{.Title}}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <font size="1" color="#0000ff">
+                        {{.Weekday}}
+                        </font>
+                    </td>
+                    <td>
+                        <font size="1" color="#ff0000">
+                            {{.Deadline}}
+                        </font>
+                    </td>
+                </tr>
+            </table>
             {{end}}
         </form>
     </div>
