@@ -5,7 +5,9 @@ go 1.14
 require (
 	cloud.google.com/go/datastore v1.2.0
 	github.com/bamzi/jobrunner v1.0.0
+	github.com/bluemon0919/timeext v0.0.0-20200719101322-c72686232844
 	github.com/rivo/tview v0.0.0-20200528200248-fe953220389f
 	github.com/tenntenn/sqlite v1.0.2
+	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	google.golang.org/api v0.28.0
 )
