@@ -21,6 +21,7 @@ type RadioProgram struct {
 	weekday   time.Weekday // 曜日
 	startTime string       // 開始時間
 	endTime   string       // 終了時間
+	stationID string       // ラジオ局
 }
 
 // RadioLayout ラジオ番組の時刻レイアウト
@@ -30,16 +31,6 @@ const RadioLayout = "15:04"
 func NewRadioRemainder(todo *TODO) *RadioRemainder {
 	return &RadioRemainder{
 		todo: todo,
-	}
-}
-
-// NewRadioProgram 新しいラジオプログラムを作成する
-func NewRadioProgram(name string, weekday time.Weekday, start, end string) *RadioProgram {
-	return &RadioProgram{
-		name:      name,
-		weekday:   weekday,
-		startTime: start,
-		endTime:   end,
 	}
 }
 
@@ -67,8 +58,9 @@ func (r *RadioRemainder) Do() {
 		flg := true
 
 		p := RadioProgram{
-			weekday: Weekday(fmt.Sprint(row[1])),
-			endTime: fmt.Sprint(row[3]),
+			weekday:   Weekday(fmt.Sprint(row[1])),
+			endTime:   fmt.Sprint(row[3]),
+			stationID: fmt.Sprint(row[4]),
 		}
 		next, _ := NextDate(&p)
 
@@ -97,6 +89,7 @@ func (r *RadioRemainder) Do() {
 			weekday:   Weekday(fmt.Sprint(row[1])),
 			startTime: fmt.Sprint(row[2]),
 			endTime:   fmt.Sprint(row[3]),
+			stationID: fmt.Sprint(row[4]),
 		})
 	}
 
@@ -107,7 +100,7 @@ func (r *RadioRemainder) Do() {
 			fmt.Println(err)
 			continue
 		}
-		r.todo.Add(p.name, "", deadline)
+		r.todo.Add(p.name, "", deadline, p.stationID)
 	}
 }
 

@@ -26,10 +26,11 @@ type TODO struct {
 
 // Item TODOアイテム
 type Item struct {
-	ID       int       `json:"ID"`
-	Title    string    `json:"Title"`
-	Detail   string    `json:"Detail"`
-	Deadline time.Time `json:"Deadline"`
+	ID        int       `json:"ID"`
+	Title     string    `json:"Title"`
+	Detail    string    `json:"Detail"`
+	Deadline  time.Time `json:"Deadline"`
+	StationID string    `json:StationID`
 }
 
 const (
@@ -69,7 +70,7 @@ func NewTODO(ent entity.Entity) *TODO {
 }
 
 // Add TODOアイテムを追加する
-func (td *TODO) Add(title, detail, deadline string) error {
+func (td *TODO) Add(title, detail, deadline, stationID string) error {
 	key := td.ent.NewID()
 
 	// ここでdeadlineをtime.Time形式にコンバートする
@@ -79,11 +80,12 @@ func (td *TODO) Add(title, detail, deadline string) error {
 	}
 
 	item := &entity.Item{
-		Key:    key,
-		Title:  title,
-		Detail: detail,
-		Status: ACTIVE,
-		Date:   date,
+		Key:       key,
+		Title:     title,
+		Detail:    detail,
+		Status:    ACTIVE,
+		Date:      date,
+		StationID: stationID,
 	}
 	td.ent.Add(item)
 	return nil
@@ -151,10 +153,11 @@ func (td *TODO) GetDeadline(deadline int) ([]Item, error) {
 	var items []Item
 	for _, eitem := range entItems {
 		items = append(items, Item{
-			ID:       eitem.Key,
-			Title:    eitem.Title,
-			Detail:   eitem.Detail,
-			Deadline: eitem.Date,
+			ID:        eitem.Key,
+			Title:     eitem.Title,
+			Detail:    eitem.Detail,
+			Deadline:  eitem.Date,
+			StationID: eitem.StationID,
 		})
 	}
 	return items, nil
@@ -168,10 +171,11 @@ func (td *TODO) get(status int) ([]Item, error) {
 	}
 	for _, ei := range eis {
 		items = append(items, Item{
-			ID:       ei.Key,
-			Title:    ei.Title,
-			Detail:   ei.Detail,
-			Deadline: ei.Date.In(td.location),
+			ID:        ei.Key,
+			Title:     ei.Title,
+			Detail:    ei.Detail,
+			Deadline:  ei.Date.In(td.location),
+			StationID: ei.StationID,
 		})
 	}
 	return items, nil

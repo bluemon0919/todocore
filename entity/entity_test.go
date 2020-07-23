@@ -7,11 +7,11 @@ import (
 )
 
 var table = []Item{
-	{0, "title1", "detail1", ACTIVE, time.Time{}},
-	{1, "title2", "detail2", COMPLETE, time.Time{}},
-	{2, "title3", "detail3", COMPLETE, time.Time{}},
-	{3, "title4", "detail4", ACTIVE, time.Time{}},
-	{4, "title5", "detail5", ACTIVE, time.Time{}},
+	{0, "title1", "detail1", ACTIVE, time.Time{}, "ABC"},
+	{1, "title2", "detail2", COMPLETE, time.Time{}, "ABC"},
+	{2, "title3", "detail3", COMPLETE, time.Time{}, "ABC"},
+	{3, "title4", "detail4", ACTIVE, time.Time{}, "ABC"},
+	{4, "title5", "detail5", ACTIVE, time.Time{}, "ABC"},
 }
 
 func TestGet(t *testing.T) {

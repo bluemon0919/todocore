@@ -19,11 +19,12 @@ type Entity interface {
 
 // Item Entityに書き込むアイテム
 type Item struct {
-	Key    int
-	Title  string
-	Detail string
-	Status int
-	Date   time.Time
+	Key       int
+	Title     string
+	Detail    string
+	Status    int
+	Date      time.Time
+	StationID string
 }
 
 // By is the type of a "less" function that defines the ordering of its Planet arguments.

@@ -35,7 +35,7 @@ func ReadGoogleSheets() (*sheets.ValueRange, error) {
 	}
 
 	// 参照
-	readRange := "Sheet1!A:D"
+	readRange := "Sheet1!A:E"
 	resp, err := srv.Spreadsheets.Values.Get(spreadsheetID, readRange).Do()
 	if err != nil {
 		log.Fatal(err)
@@ -52,6 +52,7 @@ func ReadGoogleSheets() (*sheets.ValueRange, error) {
 			weekday:   Weekday(fmt.Sprint(row[1])),
 			startTime: fmt.Sprint(row[2]),
 			endTime:   fmt.Sprint(row[3]),
+			stationID: fmt.Sprint(row[4]),
 		})
 	}
 

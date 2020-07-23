@@ -18,13 +18,16 @@
         <h2>
             今週のラジオプログラムリスト
         </h2>
-        <form class="list_operation" action="/post" method="post">
             {{range .}}
-
             <table>
                 <tr>
                   <th rowspan="2">
-                    <input type="submit" value="完了" name="{{.Title}}{{.Deadline}}">
+                    <form class="list_operation" action="/post" method="post">
+                        <input type="submit" value="完了" name="{{.Title}}{{.Deadline}}">
+                    </form>
+                    <form class="list_operation" action="/play" method="post">
+                        <input type="submit" value="再生" name="{{.Title}}{{.Deadline}}">
+                    </form>
                   </th>
                   <td colspan="2">{{.Title}}</td>
                 </tr>
@@ -42,7 +45,6 @@
                 </tr>
             </table>
             {{end}}
-        </form>
     </div>
     <!-- リスト表示エリアここまで -->
 </body>

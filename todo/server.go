@@ -4,9 +4,12 @@ import (
 	"html/template"
 	"net/http"
 	"sort"
+	"time"
 	"todocore/entity"
 
 	"github.com/bluemon0919/timeext"
+	"github.com/pkg/browser"
+	"github.com/yyoshiki41/go-radiko"
 )
 
 // Response is server response
@@ -88,6 +91,7 @@ func NewServer(addr string, ent entity.Entity) *Server {
 func (srv *Server) StartService() error {
 	http.HandleFunc("/list", srv.listHandler)
 	http.HandleFunc("/post", srv.postHandler)
+	http.HandleFunc("/play", srv.playHandler)
 	return http.ListenAndServe(srv.addr, nil)
 }
 
@@ -131,9 +135,40 @@ func (srv *Server) postHandler(w http.ResponseWriter, r *http.Request) {
 
 	items, _ := srv.td.GetActive()
 	for _, item := range items {
-		value := r.FormValue(item.Title + item.Deadline.Format(Layout))
+		t30 := timeext.TimeExt(item.Deadline)
+		value := r.FormValue(item.Title + t30.Format(Layout))
 		if "" != value {
 			srv.td.ChangeStatus(item.ID, COMPLETE)
+		}
+	}
+	http.Redirect(w, r, "/list", http.StatusFound)
+}
+
+// playHandler reflects the input result from html in the list
+func (srv *Server) playHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Redirect(w, r, "/list", http.StatusFound)
+		return
+	}
+	if err := r.ParseForm(); err != nil {
+		http.Redirect(w, r, "/list", http.StatusFound)
+		return
+	}
+
+	items, _ := srv.td.GetActive()
+	for _, item := range items {
+		t30 := timeext.TimeExt(item.Deadline)
+		value := r.FormValue(item.Title + t30.Format(Layout))
+		if value != "" {
+			// radikoのURLを取得する
+			// 一週間前の番組を取得。終了時間が登録されているので、終了１分前に調整。
+			m, _ := time.ParseDuration("-1m")
+			t := item.Deadline.AddDate(0, 0, -6).Add(m)
+			url := radiko.GetTimeshiftURL(item.StationID, t)
+			if url != "" {
+				browser.OpenURL(url)
+				break
+			}
 		}
 	}
 	http.Redirect(w, r, "/list", http.StatusFound)
