@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"sort"
 	"todocore/entity"
+
+	"github.com/bluemon0919/timeext"
 )
 
 // Response is server response
@@ -202,10 +204,11 @@ func (srv *Server) listHandler(w http.ResponseWriter, r *http.Request) {
 
 	var lis []ListItem
 	for _, item := range items {
+		t30 := timeext.TimeExt(item.Deadline)
 		li := ListItem{
 			Title:    item.Title,
 			Weekday:  item.Deadline.Weekday().String(),
-			Deadline: item.Deadline.Format(Layout),
+			Deadline: t30.Format(Layout),
 		}
 		lis = append(lis, li)
 	}

@@ -3,6 +3,8 @@ package todo
 import (
 	"fmt"
 	"time"
+
+	"github.com/bluemon0919/timeext"
 )
 
 const checkInterval = 10
@@ -121,7 +123,7 @@ func NextDate(program *RadioProgram) (string, error) {
 	now := time.Now().In(loc)
 
 	// 指定ロケーション(Asia/Tokyo)の該当時刻を作成
-	end, _ := time.Parse(RadioLayout, program.endTime)
+	end, _ := timeext.Parse(RadioLayout, program.endTime)
 	next := time.Date(now.Year(), now.Month(), now.Day(), end.Hour(), end.Minute(), 0, 0, loc)
 
 	// 該当の曜日まで進める
