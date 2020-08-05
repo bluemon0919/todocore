@@ -8,8 +8,6 @@ import (
 	"todocore/entity"
 
 	"github.com/bluemon0919/timeext"
-	"github.com/pkg/browser"
-	"github.com/yyoshiki41/go-radiko"
 )
 
 // Response is server response
@@ -156,6 +154,8 @@ func (srv *Server) playHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	items, _ := srv.td.GetActive()
+
+	var url string
 	for _, item := range items {
 		t30 := timeext.TimeExt(item.Deadline)
 		value := r.FormValue(item.Title + t30.Format(Layout))
@@ -164,12 +164,18 @@ func (srv *Server) playHandler(w http.ResponseWriter, r *http.Request) {
 			// 一週間前の番組を取得。終了時間が登録されているので、終了１分前に調整。
 			m, _ := time.ParseDuration("-1m")
 			t := item.Deadline.AddDate(0, 0, -6).Add(m)
-			url := radiko.GetTimeshiftURL(item.StationID, t)
+			GetTimeshiftURL := func(stationID string, start time.Time) string {
+				const defaultEndpoint = "http://radiko.jp"
+				location, _ := time.LoadLocation("Asia/Tokyo")
+				localTime := start.In(location)
+				endpoint := "share/?sid=" + stationID + "&t=" + localTime.Format("20060102150405")
+				return defaultEndpoint + "/" + endpoint
+			}
+			url = GetTimeshiftURL(item.StationID, t)
 			if url != "" {
-				browser.OpenURL(url)
 				break
 			}
 		}
 	}
-	http.Redirect(w, r, "/list", http.StatusFound)
+	http.Redirect(w, r, url, http.StatusFound)
 }
