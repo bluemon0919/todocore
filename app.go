@@ -22,9 +22,4 @@ func main() {
 	}
 	srv := todo.NewServer(":8080", ent)
 	srv.StartService()
-
-	client, _ := todo.NewClient("http://localhost:8080")
-	ui := NewHandler(client, "http://localhost:8080")
-	ui.Run()
-
 }
