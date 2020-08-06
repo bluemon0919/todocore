@@ -116,7 +116,7 @@ func (srv *Server) listHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	By(keysort).Sort(lis)
 
-	tpl := template.Must(template.ParseFiles("static/list2.html"))
+	tpl := template.Must(template.ParseFiles("static/list.html"))
 	tpl.Execute(w, lis)
 }
 
