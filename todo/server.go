@@ -157,13 +157,13 @@ func (srv *Server) playHandler(w http.ResponseWriter, r *http.Request) {
 
 	var url string
 	for _, item := range items {
-		t30 := timeext.TimeExt(item.Deadline)
+		t30 := timeext.TimeExt(item.StartTime)
 		value := r.FormValue(item.Title + t30.Format(Layout))
 		if value != "" {
 			// radikoのURLを取得する
 			// 一週間前の番組を取得。終了時間が登録されているので、終了１分前に調整。
-			m, _ := time.ParseDuration("-1m")
-			t := item.Deadline.AddDate(0, 0, -6).Add(m)
+			//m, _ := time.ParseDuration("-1m")
+			t := item.StartTime.AddDate(0, 0, -6)
 			GetTimeshiftURL := func(stationID string, start time.Time) string {
 				const defaultEndpoint = "http://radiko.jp"
 				location, _ := time.LoadLocation("Asia/Tokyo")

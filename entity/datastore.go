@@ -95,21 +95,21 @@ func (ent *EntityDatastore) Get(status int) (items []Item, err error) {
 
 // GetDate 期間を指定してアイテムを取得する
 func (ent *EntityDatastore) GetDate(start, end time.Time) (items []Item, err error) {
-	query := datastore.NewQuery(ent.entityType).Filter("Date >= ", start).Filter("Date <= ", end)
+	query := datastore.NewQuery(ent.entityType).Filter("EntTime >= ", start).Filter("EntTime <= ", end)
 	items, err = ent.get(query)
 	return
 }
 
 // GetAfterDate 期間を指定してアイテムを取得する
 func (ent *EntityDatastore) GetAfterDate(base time.Time) (items []Item, err error) {
-	query := datastore.NewQuery(ent.entityType).Filter("Date >= ", base)
+	query := datastore.NewQuery(ent.entityType).Filter("EntTime >= ", base)
 	items, err = ent.get(query)
 	return
 }
 
 // GetBeforeDate は基準日時以前のアイテムを取得する
 func (ent *EntityDatastore) GetBeforeDate(base time.Time) (items []Item, err error) {
-	query := datastore.NewQuery(ent.entityType).Filter("Date <= ", base)
+	query := datastore.NewQuery(ent.entityType).Filter("EntTime <= ", base)
 	items, err = ent.get(query)
 	return
 }

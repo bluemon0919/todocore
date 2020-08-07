@@ -23,7 +23,8 @@ type Item struct {
 	Title     string
 	Detail    string
 	Status    int
-	Date      time.Time
+	StartTime time.Time
+	EndTime   time.Time
 	StationID string
 }
 

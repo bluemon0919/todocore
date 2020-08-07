@@ -27,7 +27,10 @@ func NewSQL(filename string) *EntitySQL {
 		key   INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 		title TEXT NOT NULL,
 		detail TEXT NOT NULL,
-		status INTEGER NOT NULL);`
+		status INTEGER NOT NULL
+		startTime TIME NOT NULL
+		endTime TIME NOT NULL
+		stationID TEXT NOT NULL);`
 
 	if _, err = db.Exec(sql); err != nil {
 		return nil
@@ -56,7 +59,7 @@ func (e *EntitySQL) Add(ei *Item) error {
 		return errors.New("Status is empty")
 	}
 	const sql = "INSERT INTO item(title, detail, status) values (?,?,?)"
-	_, err := e.db.Exec(sql, ei.Title, ei.Detail, ei.Status)
+	_, err := e.db.Exec(sql, ei.Title, ei.Detail, ei.Status, ei.StartTime, ei.EndTime, ei.StationID)
 	return err
 }
 
@@ -85,7 +88,14 @@ func (e *EntitySQL) Get(status int) (eis []Item, err error) {
 
 	for rows.Next() {
 		var item Item
-		if err := rows.Scan(&item.Key, &item.Title, &item.Detail, &item.Status); err != nil {
+		if err := rows.Scan(
+			&item.Key,
+			&item.Title,
+			&item.Detail,
+			&item.Status,
+			&item.StartTime,
+			&item.EndTime,
+			&item.StationID); err != nil {
 			return nil, err
 		}
 		eis = append(eis, item)
