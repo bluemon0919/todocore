@@ -157,7 +157,7 @@ func (srv *Server) playHandler(w http.ResponseWriter, r *http.Request) {
 
 	var url string
 	for _, item := range items {
-		t30 := timeext.TimeExt(item.StartTime)
+		t30 := timeext.TimeExt(item.Deadline)
 		value := r.FormValue(item.Title + t30.Format(Layout))
 		if value != "" {
 			// radikoのURLを取得する
