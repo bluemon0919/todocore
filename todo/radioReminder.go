@@ -122,12 +122,25 @@ func NextDate(program *RadioProgram) (string, string, error) {
 	nextStart := time.Date(now.Year(), now.Month(), now.Day(), start.Hour(), start.Minute(), 0, 0, loc)
 	nextEnd := time.Date(now.Year(), now.Month(), now.Day(), end.Hour(), end.Minute(), 0, 0, loc)
 
-	// 該当の曜日まで進める
-	d := program.weekday - nextEnd.Weekday()
-	if d <= 0 {
-		d += 7
+	// 24:00以降の時刻の場合は調整する
+	isext, err := timeext.IsExt(RadioLayout, program.startTime)
+	if err != nil {
+		return "", "", err
+	}
+	d := int(program.weekday)
+	if isext {
+		d++
 	}
 	nextStart = nextStart.AddDate(0, 0, int(d))
+
+	isext, err = timeext.IsExt(RadioLayout, program.endTime)
+	if err != nil {
+		return "", "", err
+	}
+	d = int(program.weekday)
+	if isext {
+		d++
+	}
 	nextEnd = nextEnd.AddDate(0, 0, int(d))
 	return nextStart.Format(Layout), nextEnd.Format(Layout), nil
 }
