@@ -127,21 +127,33 @@ func NextDate(program *RadioProgram) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
-	d := int(program.weekday)
-	if isext {
-		d++
+	wd := program.weekday - nextStart.Weekday()
+	if wd < 0 {
+		wd += 7
 	}
-	nextStart = nextStart.AddDate(0, 0, int(d))
+	if isext {
+		wd++
+		if wd >= 7 {
+			wd -= 7
+		}
+	}
+	nextStart = nextStart.AddDate(0, 0, int(wd))
 
 	isext, err = timeext.IsExt(RadioLayout, program.endTime)
 	if err != nil {
 		return "", "", err
 	}
-	d = int(program.weekday)
-	if isext {
-		d++
+	wd = program.weekday - nextEnd.Weekday()
+	if wd < 0 {
+		wd += 7
 	}
-	nextEnd = nextEnd.AddDate(0, 0, int(d))
+	if isext {
+		wd++
+		if wd >= 7 {
+			wd -= 7
+		}
+	}
+	nextEnd = nextEnd.AddDate(0, 0, int(wd))
 	return nextStart.Format(Layout), nextEnd.Format(Layout), nil
 }
 
