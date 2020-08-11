@@ -101,19 +101,24 @@ func (srv *Server) listHandler(w http.ResponseWriter, r *http.Request) {
 
 	var lis []ListItem
 	for _, item := range items {
-		t30 := timeext.TimeExt(item.Deadline)
+		t30Deadline := timeext.TimeExt(item.Deadline)
 
-		deadline := t30.Format(Layout)
-		isext, _ := timeext.IsExt(Layout, deadline)
-		weekday := item.Deadline.Weekday()
+		// 曜日はStartTimeで計算する
+		t30 := timeext.TimeExt(item.StartTime)
+		startTime := t30.Format(Layout)
+		isext, _ := timeext.IsExt(Layout, startTime)
+		weekday := item.StartTime.Weekday()
 		if isext {
 			weekday += -1
+			if 7 <= weekday {
+				weekday = time.Sunday
+			}
 		}
 
 		li := ListItem{
 			Title:    item.Title,
 			Weekday:  weekday.String(),
-			Deadline: t30.Format(Layout),
+			Deadline: t30Deadline.Format(Layout),
 		}
 		lis = append(lis, li)
 	}
