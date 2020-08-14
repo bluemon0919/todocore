@@ -1,9 +1,11 @@
 package todo
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"sort"
+	"strconv"
 	"time"
 	"todocore/entity"
 
@@ -85,17 +87,8 @@ func NewServer(addr string, ent entity.Entity) *Server {
 	return srv
 }
 
-// StartService starts http server.
-func (srv *Server) StartService() error {
-	http.HandleFunc("/list", srv.listHandler)
-	http.HandleFunc("/post", srv.postHandler)
-	http.HandleFunc("/play", srv.playHandler)
-	return http.ListenAndServe(srv.addr, nil)
-}
-
-// listHandler writes list to http.ResponseWriter
-// display the list in html
-func (srv *Server) listHandler(w http.ResponseWriter, r *http.Request) {
+// GetList アクティブな番組一覧を取得します
+func (srv *Server) GetList() ([]ListItem, error) {
 	srv.remainder.Run()
 	items, _ := srv.td.GetActive()
 
@@ -115,7 +108,43 @@ func (srv *Server) listHandler(w http.ResponseWriter, r *http.Request) {
 		return p1.Deadline < p2.Deadline
 	}
 	By(keysort).Sort(lis)
+	return lis, nil
+}
 
+// PostProgram IDで指定した番組の聴取状態を"完了"に更新します
+func (srv *Server) PostProgram(id string) error {
+	iid, err := strconv.Atoi(id)
+	if err != nil {
+		return err
+	}
+
+	items, _ := srv.td.GetActive()
+	isExist := false
+	for _, item := range items {
+		if item.ID == iid {
+			isExist = true
+			break
+		}
+	}
+	if !isExist {
+		return fmt.Errorf("No item was found with the specified ID[%d]", iid)
+	}
+
+	return srv.td.ChangeStatus(iid, COMPLETE)
+}
+
+// StartService starts http server.
+func (srv *Server) StartService() error {
+	http.HandleFunc("/list", srv.listHandler)
+	http.HandleFunc("/post", srv.postHandler)
+	http.HandleFunc("/play", srv.playHandler)
+	return http.ListenAndServe(srv.addr, nil)
+}
+
+// listHandler writes list to http.ResponseWriter
+// display the list in html
+func (srv *Server) listHandler(w http.ResponseWriter, r *http.Request) {
+	lis, _ := srv.GetList()
 	tpl := template.Must(template.ParseFiles("static/list.html"))
 	tpl.Execute(w, lis)
 }
