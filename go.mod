@@ -1,4 +1,4 @@
-module todocore
+module github.com/bluemon0919/todocore
 
 go 1.14
 
