@@ -3,7 +3,8 @@ package todo
 import (
 	"fmt"
 	"time"
-	"todocore/entity"
+
+	"github.com/bluemon0919/todocore/entity"
 )
 
 // TodoInterface operates TODO

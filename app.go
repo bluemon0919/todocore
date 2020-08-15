@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	"todocore/entity"
-	"todocore/todo"
+	"github.com/bluemon0919/todocore/entity"
+	"github.com/bluemon0919/todocore/todo"
 )
 
 func main() {
