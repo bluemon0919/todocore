@@ -38,9 +38,11 @@ type Server struct {
 }
 
 type ListItem struct {
+	ID       string
 	Title    string
 	Weekday  string
 	Deadline string
+	URL      string
 }
 
 type By func(p1, p2 *ListItem) bool
@@ -108,10 +110,13 @@ func (srv *Server) GetList() ([]ListItem, error) {
 			}
 		}
 
+		t := item.StartTime.AddDate(0, 0, -7)
 		li := ListItem{
+			ID:       fmt.Sprintf("%d", item.ID),
 			Title:    item.Title,
 			Weekday:  weekday.String(),
 			Deadline: t30Deadline.Format(Layout),
+			URL:      GetTimeshiftURL(item.StationID, t),
 		}
 		lis = append(lis, li)
 	}
@@ -206,13 +211,6 @@ func (srv *Server) playHandler(w http.ResponseWriter, r *http.Request) {
 			// 一週間前の番組を取得。終了時間が登録されているので、終了１分前に調整。
 			//m, _ := time.ParseDuration("-1m")
 			t := item.StartTime.AddDate(0, 0, -7)
-			GetTimeshiftURL := func(stationID string, start time.Time) string {
-				const defaultEndpoint = "http://radiko.jp"
-				location, _ := time.LoadLocation("Asia/Tokyo")
-				localTime := start.In(location)
-				endpoint := "share/?sid=" + stationID + "&t=" + localTime.Format("20060102150405")
-				return defaultEndpoint + "/" + endpoint
-			}
 			url = GetTimeshiftURL(item.StationID, t)
 			if url != "" {
 				break
@@ -220,4 +218,13 @@ func (srv *Server) playHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	http.Redirect(w, r, url, http.StatusFound)
+}
+
+// GetTimeshiftURL ラジオのタイムシフトの番組URLを取得する
+func GetTimeshiftURL(stationID string, start time.Time) string {
+	const defaultEndpoint = "http://radiko.jp"
+	location, _ := time.LoadLocation("Asia/Tokyo")
+	localTime := start.In(location)
+	endpoint := "share/?sid=" + stationID + "&t=" + localTime.Format("20060102150405")
+	return defaultEndpoint + "/" + endpoint
 }
