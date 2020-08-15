@@ -59,14 +59,15 @@ func (r *RadioRemainder) Do() {
 
 		p := RadioProgram{
 			weekday:   Weekday(fmt.Sprint(row[1])),
+			startTime: fmt.Sprint(row[2]),
 			endTime:   fmt.Sprint(row[3]),
 			stationID: fmt.Sprint(row[4]),
 		}
-		next, _ := NextDate(&p)
+		_, nextEnd, _ := NextDate(&p)
 
 		for _, a := range actives {
 			if a.Title == fmt.Sprint(row[0]) &&
-				a.Deadline.Format(Layout) == next {
+				a.Deadline.Format(Layout) == nextEnd {
 				flg = false
 				break
 			}
@@ -76,7 +77,7 @@ func (r *RadioRemainder) Do() {
 		}
 		for _, c := range completes {
 			if c.Title == fmt.Sprint(row[0]) &&
-				c.Deadline.Format(Layout) == next {
+				c.Deadline.Format(Layout) == nextEnd {
 				flg = false
 				break
 			}
@@ -95,37 +96,65 @@ func (r *RadioRemainder) Do() {
 
 	// プログラムを登録する
 	for _, p := range programs {
-		deadline, err := NextDate(&p)
+		startTime, endTime, err := NextDate(&p)
 		if err != nil {
 			fmt.Println(err)
 			continue
 		}
-		r.todo.Add(p.name, "", deadline, p.stationID)
+		r.todo.Add(p.name, "", startTime, endTime, p.stationID)
 	}
 }
 
 // NextDate 次の日程を設定する
-func NextDate(program *RadioProgram) (string, error) {
+func NextDate(program *RadioProgram) (string, string, error) {
 	// ロケーション情報を取得
 	loc, err := time.LoadLocation("Asia/Tokyo")
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	// 指定ロケーション(Asia/Tokyo)の現在時刻を取得
 	now := time.Now().In(loc)
 
 	// 指定ロケーション(Asia/Tokyo)の該当時刻を作成
+	start, _ := timeext.Parse(RadioLayout, program.startTime)
 	end, _ := timeext.Parse(RadioLayout, program.endTime)
-	next := time.Date(now.Year(), now.Month(), now.Day(), end.Hour(), end.Minute(), 0, 0, loc)
+	nextStart := time.Date(now.Year(), now.Month(), now.Day(), start.Hour(), start.Minute(), 0, 0, loc)
+	nextEnd := time.Date(now.Year(), now.Month(), now.Day(), end.Hour(), end.Minute(), 0, 0, loc)
 
-	// 該当の曜日まで進める
-	d := program.weekday - next.Weekday()
-	if d <= 0 {
-		d += 7
+	// 24:00以降の時刻の場合は調整する
+	isext, err := timeext.IsExt(RadioLayout, program.startTime)
+	if err != nil {
+		return "", "", err
 	}
-	next = next.AddDate(0, 0, int(d))
-	return next.Format(Layout), nil
+	wd := program.weekday - nextStart.Weekday()
+	if wd < 0 {
+		wd += 7
+	}
+	if isext {
+		wd++
+		if wd >= 7 {
+			wd -= 7
+		}
+	}
+	nextStart = nextStart.AddDate(0, 0, int(wd))
+
+	isext, err = timeext.IsExt(RadioLayout, program.endTime)
+	if err != nil {
+		return "", "", err
+	}
+	wd = program.weekday - nextEnd.Weekday()
+	if wd < 0 {
+		wd += 7
+	}
+	if isext {
+		wd++
+		if wd >= 7 {
+			wd -= 7
+		}
+	}
+	nextEnd = nextEnd.AddDate(0, 0, int(wd))
+	return nextStart.Format(Layout), nextEnd.Format(Layout), nil
 }
 
 // Run will get triggered automatically.

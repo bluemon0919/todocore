@@ -94,11 +94,24 @@ func (srv *Server) GetList() ([]ListItem, error) {
 
 	var lis []ListItem
 	for _, item := range items {
-		t30 := timeext.TimeExt(item.Deadline)
+		t30Deadline := timeext.TimeExt(item.Deadline)
+
+		// 曜日はStartTimeで計算する
+		t30 := timeext.TimeExt(item.StartTime)
+		startTime := t30.Format(Layout)
+		isext, _ := timeext.IsExt(Layout, startTime)
+		weekday := item.StartTime.Weekday()
+		if isext {
+			weekday += -1
+			if 7 <= weekday {
+				weekday = time.Sunday
+			}
+		}
+
 		li := ListItem{
 			Title:    item.Title,
-			Weekday:  item.Deadline.Weekday().String(),
-			Deadline: t30.Format(Layout),
+			Weekday:  weekday.String(),
+			Deadline: t30Deadline.Format(Layout),
 		}
 		lis = append(lis, li)
 	}
@@ -191,8 +204,8 @@ func (srv *Server) playHandler(w http.ResponseWriter, r *http.Request) {
 		if value != "" {
 			// radikoのURLを取得する
 			// 一週間前の番組を取得。終了時間が登録されているので、終了１分前に調整。
-			m, _ := time.ParseDuration("-1m")
-			t := item.Deadline.AddDate(0, 0, -6).Add(m)
+			//m, _ := time.ParseDuration("-1m")
+			t := item.StartTime.AddDate(0, 0, -7)
 			GetTimeshiftURL := func(stationID string, start time.Time) string {
 				const defaultEndpoint = "http://radiko.jp"
 				location, _ := time.LoadLocation("Asia/Tokyo")

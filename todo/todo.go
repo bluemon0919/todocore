@@ -30,8 +30,9 @@ type Item struct {
 	ID        int       `json:"ID"`
 	Title     string    `json:"Title"`
 	Detail    string    `json:"Detail"`
+	StartTime time.Time `json:"StartTime"`
 	Deadline  time.Time `json:"Deadline"`
-	StationID string    `json:StationID`
+	StationID string    `json:"StationID"`
 }
 
 const (
@@ -71,13 +72,16 @@ func NewTODO(ent entity.Entity) *TODO {
 }
 
 // Add TODOアイテムを追加する
-func (td *TODO) Add(title, detail, deadline, stationID string) error {
+func (td *TODO) Add(title, detail, startTime, deadline, stationID string) error {
 	key := td.ent.NewID()
 
-	// ここでdeadlineをtime.Time形式にコンバートする
-	var date time.Time
+	var end time.Time
 	if d, err := time.ParseInLocation(Layout, deadline, td.location); err == nil {
-		date = d
+		end = d
+	}
+	var start time.Time
+	if d, err := time.ParseInLocation(Layout, startTime, td.location); err == nil {
+		start = d
 	}
 
 	item := &entity.Item{
@@ -85,7 +89,8 @@ func (td *TODO) Add(title, detail, deadline, stationID string) error {
 		Title:     title,
 		Detail:    detail,
 		Status:    ACTIVE,
-		Date:      date,
+		StartTime: start,
+		EndTime:   end,
 		StationID: stationID,
 	}
 	td.ent.Add(item)
@@ -157,7 +162,8 @@ func (td *TODO) GetDeadline(deadline int) ([]Item, error) {
 			ID:        eitem.Key,
 			Title:     eitem.Title,
 			Detail:    eitem.Detail,
-			Deadline:  eitem.Date,
+			StartTime: eitem.StartTime,
+			Deadline:  eitem.EndTime,
 			StationID: eitem.StationID,
 		})
 	}
@@ -175,7 +181,8 @@ func (td *TODO) get(status int) ([]Item, error) {
 			ID:        ei.Key,
 			Title:     ei.Title,
 			Detail:    ei.Detail,
-			Deadline:  ei.Date.In(td.location),
+			StartTime: ei.StartTime.In(td.location),
+			Deadline:  ei.EndTime.In(td.location),
 			StationID: ei.StationID,
 		})
 	}
