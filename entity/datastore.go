@@ -2,11 +2,14 @@ package entity
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/datastore"
 	"google.golang.org/api/iterator"
 )
+
+var mux sync.Mutex
 
 // EntityDatastore データを管理する
 type EntityDatastore struct {
@@ -25,8 +28,11 @@ func NewDatastore(projectID string, entityType string) *EntityDatastore {
 
 // NewID 新しいIDを返す
 func (ent *EntityDatastore) NewID() int {
+	mux.Lock()
 	ent.id++
-	return ent.id
+	id := ent.id
+	mux.Unlock()
+	return id
 }
 
 // Add Entityにアイテムを追加する
