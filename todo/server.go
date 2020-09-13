@@ -38,7 +38,7 @@ type Server struct {
 }
 
 type ListItem struct {
-	ID       string
+	ID       int64
 	Title    string
 	Weekday  string
 	Deadline string
@@ -112,7 +112,7 @@ func (srv *Server) GetList() ([]ListItem, error) {
 
 		t := item.StartTime.AddDate(0, 0, -7)
 		li := ListItem{
-			ID:       fmt.Sprintf("%d", item.ID),
+			ID:       item.ID,
 			Title:    item.Title,
 			Weekday:  weekday.String(),
 			Deadline: t30Deadline.Format(Layout),
@@ -121,7 +121,7 @@ func (srv *Server) GetList() ([]ListItem, error) {
 		lis = append(lis, li)
 	}
 
-	// Keyでソートする
+	// Deadlineでソートする
 	keysort := func(p1, p2 *ListItem) bool {
 		return p1.Deadline < p2.Deadline
 	}
@@ -139,7 +139,7 @@ func (srv *Server) PostProgram(id string) error {
 	items, _ := srv.td.GetActive()
 	isExist := false
 	for _, item := range items {
-		if item.ID == iid {
+		if item.ID == int64(iid) {
 			isExist = true
 			break
 		}
@@ -148,7 +148,7 @@ func (srv *Server) PostProgram(id string) error {
 		return fmt.Errorf("No item was found with the specified ID[%d]", iid)
 	}
 
-	return srv.td.ChangeStatus(iid, COMPLETE)
+	return srv.td.ChangeStatus(int64(iid), COMPLETE)
 }
 
 // StartService starts http server.
@@ -183,6 +183,7 @@ func (srv *Server) postHandler(w http.ResponseWriter, r *http.Request) {
 		t30 := timeext.TimeExt(item.Deadline)
 		value := r.FormValue(item.Title + t30.Format(Layout))
 		if "" != value {
+			fmt.Println("change:", item.ID, value)
 			srv.td.ChangeStatus(item.ID, COMPLETE)
 		}
 	}

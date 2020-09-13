@@ -7,19 +7,17 @@ import (
 
 // Entity operates entity
 type Entity interface {
-	NewID() int
 	Add(item *Item) error
-	Delete(key int) error
-	Update(key, status int) error
-	Get(status int) (items []Item, err error)
-	GetDate(start, end time.Time) (items []Item, err error)
-	GetAfterDate(base time.Time) (items []Item, err error)
-	GetBeforeDate(base time.Time) (items []Item, err error)
+	Delete(id int64) error
+	Update(id int64, status int) error
+	Get(status int) (items []Item, ids []int64, err error)
+	GetDate(start, end time.Time) (items []Item, ids []int64, err error)
+	GetAfterDate(base time.Time) (items []Item, ids []int64, err error)
+	GetBeforeDate(base time.Time) (items []Item, ids []int64, err error)
 }
 
 // Item Entityに書き込むアイテム
 type Item struct {
-	Key       int
 	Title     string
 	Detail    string
 	Status    int

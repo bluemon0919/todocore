@@ -27,7 +27,7 @@ type TODO struct {
 
 // Item TODOアイテム
 type Item struct {
-	ID        int       `json:"ID"`
+	ID        int64
 	Title     string    `json:"Title"`
 	Detail    string    `json:"Detail"`
 	StartTime time.Time `json:"StartTime"`
@@ -73,8 +73,6 @@ func NewTODO(ent entity.Entity) *TODO {
 
 // Add TODOアイテムを追加する
 func (td *TODO) Add(title, detail, startTime, deadline, stationID string) error {
-	key := td.ent.NewID()
-
 	var end time.Time
 	if d, err := time.ParseInLocation(Layout, deadline, td.location); err == nil {
 		end = d
@@ -85,7 +83,6 @@ func (td *TODO) Add(title, detail, startTime, deadline, stationID string) error 
 	}
 
 	item := &entity.Item{
-		Key:       key,
 		Title:     title,
 		Detail:    detail,
 		Status:    ACTIVE,
@@ -98,12 +95,12 @@ func (td *TODO) Add(title, detail, startTime, deadline, stationID string) error 
 }
 
 // Delete TODOアイテムを削除する
-func (td *TODO) Delete(id int) error {
+func (td *TODO) Delete(id int64) error {
 	return td.ent.Delete(id)
 }
 
 // ChangeStatus TODOアイテムのステータスを変更する
-func (td *TODO) ChangeStatus(id, status int) error {
+func (td *TODO) ChangeStatus(id int64, status int) error {
 	return td.ent.Update(id, status)
 }
 
@@ -128,6 +125,7 @@ func (td *TODO) GetDeadline(deadline int) ([]Item, error) {
 	today := now.Truncate(time.Hour).Add(-time.Duration(now.Hour()) * time.Hour)
 
 	var entItems []entity.Item
+	var ids []int64
 
 	switch deadline {
 	// 期限が本日のアイテムを取得する
@@ -135,19 +133,19 @@ func (td *TODO) GetDeadline(deadline int) ([]Item, error) {
 		// 現在の日付を取得して、0:00-23:59を設定する
 		start := today
 		end := today.Add(time.Hour*23 + time.Minute*59)
-		entItems, err = td.ent.GetDate(start, end)
+		entItems, ids, err = td.ent.GetDate(start, end)
 
 	// 期限が3日以内のアイテムを取得する
 	case DeadlineSoon:
 		// 3日前の0:00から1日前の23:59を設定する
 		start := today.Add(time.Hour * 24 * SoonSettingStart * -1)
 		end := today.Add(time.Hour*24*SoonSettingEnd*-1 + time.Minute*59)
-		entItems, err = td.ent.GetDate(start, end)
+		entItems, ids, err = td.ent.GetDate(start, end)
 
 		// 期限切れのアイテムを取得する
 	case DeadlineExpired:
 		base := today
-		entItems, err = td.ent.GetBeforeDate(base)
+		entItems, ids, err = td.ent.GetBeforeDate(base)
 
 	default:
 		return nil, fmt.Errorf("unsupported definition specified %d", deadline)
@@ -156,10 +154,13 @@ func (td *TODO) GetDeadline(deadline int) ([]Item, error) {
 	if err != nil {
 		return nil, err
 	}
+	if len(entItems) != len(ids) {
+		return nil, fmt.Errorf("the number of items and the number of keys are different")
+	}
 	var items []Item
-	for _, eitem := range entItems {
+	for i, eitem := range entItems {
 		items = append(items, Item{
-			ID:        eitem.Key,
+			ID:        ids[i],
 			Title:     eitem.Title,
 			Detail:    eitem.Detail,
 			StartTime: eitem.StartTime,
@@ -172,13 +173,16 @@ func (td *TODO) GetDeadline(deadline int) ([]Item, error) {
 
 func (td *TODO) get(status int) ([]Item, error) {
 	var items []Item
-	eis, err := td.ent.Get(status)
+	eis, ids, err := td.ent.Get(status)
 	if err != nil {
 		return nil, err
 	}
-	for _, ei := range eis {
+	if len(eis) != len(ids) {
+		return nil, fmt.Errorf("the number of items and the number of keys are different")
+	}
+	for i, ei := range eis {
 		items = append(items, Item{
-			ID:        ei.Key,
+			ID:        ids[i],
 			Title:     ei.Title,
 			Detail:    ei.Detail,
 			StartTime: ei.StartTime.In(td.location),
