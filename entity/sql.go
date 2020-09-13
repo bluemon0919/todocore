@@ -89,7 +89,6 @@ func (e *EntitySQL) Get(status int) (eis []Item, err error) {
 	for rows.Next() {
 		var item Item
 		if err := rows.Scan(
-			&item.Key,
 			&item.Title,
 			&item.Detail,
 			&item.Status,
