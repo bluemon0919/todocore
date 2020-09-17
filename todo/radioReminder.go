@@ -5,14 +5,17 @@ import (
 	"time"
 
 	"github.com/bluemon0919/timeext"
+	"google.golang.org/api/sheets/v4"
 )
 
 const checkInterval = 10
 
 // RadioRemainder ラジオリマインダー機能
 type RadioRemainder struct {
-	programs []RadioProgram
-	todo     *TODO
+	programs     []RadioProgram
+	todo         *TODO
+	sheetDatas   sheets.ValueRange // googleスプレッドシートから取得したデータ
+	flgReadSheet bool
 }
 
 // RadioProgram 番組情報
@@ -34,9 +37,12 @@ func NewRadioRemainder(todo *TODO) *RadioRemainder {
 	}
 }
 
-// AddProgram 番組を登録する
-func (r *RadioRemainder) AddProgram(program RadioProgram) {
-	r.programs = append(r.programs, program)
+func (r *RadioRemainder) Update() error {
+	// GoogleSheetsからリストを取得する
+	datas, err := ReadGoogleSheets()
+	r.sheetDatas = *datas
+	r.flgReadSheet = true
+	return err
 }
 
 // Do はラジオリマインダーを実行する
@@ -51,10 +57,12 @@ func (r *RadioRemainder) Do() {
 		return
 	}
 
-	// GoogleSheetsからリストを取得する
-	sheetDatas, _ := ReadGoogleSheets()
+	// GoogleSheetsから取得したリストを処理する
+	if !r.flgReadSheet {
+		r.Update()
+	}
 	var programs []RadioProgram
-	for _, row := range sheetDatas.Values {
+	for _, row := range r.sheetDatas.Values {
 		flg := true
 
 		p := RadioProgram{
@@ -162,6 +170,7 @@ func (r RadioRemainder) Run() {
 	// 期限切れのプログラムを削除する
 	items, err := r.todo.GetDeadline(DeadlineExpired)
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 	for _, item := range items {

@@ -156,6 +156,7 @@ func (srv *Server) StartService() error {
 	http.HandleFunc("/list", srv.listHandler)
 	http.HandleFunc("/post", srv.postHandler)
 	http.HandleFunc("/play", srv.playHandler)
+	http.HandleFunc("/update", srv.updateHandler)
 	return http.ListenAndServe(srv.addr, nil)
 }
 
@@ -219,6 +220,16 @@ func (srv *Server) playHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	http.Redirect(w, r, url, http.StatusFound)
+}
+
+// updateHandler Googleスプレットシートからデータを読み込む
+func (srv *Server) updateHandler(w http.ResponseWriter, r *http.Request) {
+	err := srv.remainder.Update()
+	if err != nil {
+		fmt.Fprintln(w, err)
+		return
+	}
+	fmt.Fprintln(w, "Updated.")
 }
 
 // GetTimeshiftURL ラジオのタイムシフトの番組URLを取得する
