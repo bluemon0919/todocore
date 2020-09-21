@@ -92,15 +92,35 @@ func (ent *EntityDatastore) GetDate(start, end time.Time) (items []Item, ids []i
 
 // GetAfterDate 期間を指定してアイテムを取得する
 func (ent *EntityDatastore) GetAfterDate(base time.Time) (items []Item, ids []int64, err error) {
-	query := datastore.NewQuery(ent.entityType).Filter("EntTime >= ", base)
-	items, ids, err = ent.get(query)
+	query := datastore.NewQuery(ent.entityType)
+	tmpItems, tmpIds, err := ent.get(query)
+	if err != nil {
+		return nil, nil, err
+	}
+	for i, item := range tmpItems {
+		// base <= item.EndTime
+		if !base.After(item.EndTime) {
+			items = append(items, item)
+			ids = append(ids, tmpIds[i])
+		}
+	}
 	return
 }
 
 // GetBeforeDate は基準日時以前のアイテムを取得する
 func (ent *EntityDatastore) GetBeforeDate(base time.Time) (items []Item, ids []int64, err error) {
-	query := datastore.NewQuery(ent.entityType).Filter("EntTime <= ", base)
-	items, ids, err = ent.get(query)
+	query := datastore.NewQuery(ent.entityType)
+	tmpItems, tmpIds, err := ent.get(query)
+	if err != nil {
+		return nil, nil, err
+	}
+	for i, item := range tmpItems {
+		// base >= item.EndTime
+		if !base.Before(item.EndTime) {
+			items = append(items, item)
+			ids = append(ids, tmpIds[i])
+		}
+	}
 	return
 }
 
